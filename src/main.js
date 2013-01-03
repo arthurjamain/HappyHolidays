@@ -117,10 +117,10 @@ $(function() {
             setTimeout(_.bind(function() {
               var $t = $(this.introTriangles[this.triangleOffset]);
 
-              $t.fadeIn(100, _.bind(function() {
+              $t.fadeIn(150, _.bind(function() {
                 setTimeout(_.bind(function() {
-                  this.fadeOut(100);
-                }, this), 140);
+                  this.fadeOut(150);
+                }, this), 100);
 
                 if(self.triangleOffset == totalTriangles) {
                   if(typeof cb === 'function') cb.call(self);
@@ -143,9 +143,9 @@ $(function() {
             sel = sel.substr(0, sel.length - 1);
             
             var $k = $(sel);
-            $k.fadeIn(100, _.bind(function() {
+            $k.fadeIn(150, _.bind(function() {
               setTimeout(_.bind(function() {
-                this.fadeOut(100);
+                this.fadeOut(150);
               }, this), 100);
 
               if(self.triangleOffset == totalTriangles) {
@@ -162,26 +162,31 @@ $(function() {
     },
 
     triggerSecondIntroAnimation: function(cb) {
-      this.timeOffset = 0;
-      this.triangleOffset = 0;
       var totalTriangles = _.reduce(this.introColumnsCount, function(memo, num) { return memo + num; });
-      /*
-      for(var i = 0; i < this.introColumnsCount.length; i++) {
-        for(var j = 0; j < this.introColumnsCount[i]; j++) {
-          setTimeout(_.bind(function() {
-            $t = $(this.introTriangles[this.triangleOffset]);
-
-            $t.fadeIn(120);
-
-            this.triangleOffset++;
-            if(this.triangleOffset == totalTriangles) {
-              if(typeof cb === 'function') cb.call(this);
+      var digits = splitArrayAtZeros(this.introColumnsCount);
+      var launchedTriangles = 0;
+      for(var i = 0; i < digits.length; i++) {
+        setTimeout(_.bind(function() {
+          var trianglesPerDigit = 0;
+          for(var j = 0; j < digits[this.i].length; j++) {
+            for(var k = 0; k < digits[this.i][j]; k++) {
+              trianglesPerDigit++;
             }
-          }, this), 50 * this.timeOffset);
-          this.timeOffset++;
-        }
+          }
+          for(var l = 0; l < trianglesPerDigit; l++) {
+            var c = launchedTriangles;
+            setTimeout(_.bind(function() {
+              var $t = $(this.introTriangles[c]);
+              c++;
+              $t.fadeIn(200);
+
+            }, {introTriangles: this.introTriangles}), 30 * l);
+          }
+
+          launchedTriangles += trianglesPerDigit;
+
+        }, {i: i, introTriangles: this.introTriangles}), i*200);
       }
-      */
     }
   });
 
@@ -195,3 +200,31 @@ $(function() {
   });
 
 });
+
+function splitArrayAtZeros(arr) {
+  
+  var splitArray = [];
+  var buffer = [];
+
+  for(var i in arr) {
+    if(arr[i] === 0) {
+      if(buffer.length) {
+        splitArray.push(buffer);
+        buffer = [];
+      }
+    }
+    else {
+      buffer.push(arr[i]);
+    }
+  }
+
+  return splitArray;
+
+}
+
+
+
+
+
+
+
