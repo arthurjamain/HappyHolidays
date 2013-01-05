@@ -14,9 +14,31 @@ body {
     height: 100%;
 }
 
+#content {
+  width: 700px;
+  height: 300px;
+  position: absolute;
+}
+
+.content-triangle {
+  width: 20px;
+  height: 20px;
+  float: left;
+  background: transparent url(../img/triangle.png) no-repeat top left;
+}
+
+.content-triangle.odd {
+  background: transparent url(../img/reverted_triangle.png) no-repeat top left;
+  width: 20px;
+  height: 20px;
+  margin-left: -20px;
+  overflow: visible;
+}
+
 #intro {
     position: absolute;
     width: 700px;
+    z-index: 10;
 }
 
 .intro-triangle {
@@ -245,68 +267,68 @@ body {
 }
 #it45 {
   top: 160px;
-  left: 380px;
+  left: 360px;
 }
 #it46 {
   top: 20px;
-  left: 400px;
+  left: 380px;
 }
 #it47 {
   top: 80px;
-  left: 400px;
+  left: 380px;
 }
 #it48 {
   top: 160px;
-  left: 400px;
+  left: 380px;
   background-image: url(../img/reverted_triangle.png);
 }
 #it49 {
   top: 0;
-  left: 420px;
+  left: 400px;
   background-image: url(../img/reverted_triangle.png);
 }
 #it50 {
   top: 80px;
-  left: 420px;
+  left: 400px;
   background-image: url(../img/reverted_triangle.png);
 }
 #it51 {
   top: 160px;
-  left: 420px;
+  left: 400px;
 }
 #it52 {
   top: 20px;
-  left: 440px;
+  left: 420px;
 }
 #it53 {
   top: 60px;
-  left: 440px;
+  left: 420px;
   background-image: url(../img/reverted_triangle.png);
 }
 #it54 {
   top: 100px;
-  left: 440px;
+  left: 420px;
   background-image: url(../img/reverted_triangle.png);
 }
 #it55 {
   top: 140px;
-  left: 440px;
+  left: 420px;
 }
 #it56 {
   top: 160px;
-  left: 440px;
+  left: 420px;
 }
 #it57 {
   top: 40px;
-  left: 460px;
+  left: 440px;
 }
 #it58 {
   top: 60px;
-  left: 460px;
+  left: 440px;
 }
 #it59 {
   top: 120px;
-  left: 460px;
+  left: 440px;
 }
 
 
