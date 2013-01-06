@@ -2,6 +2,7 @@ var NoCanvasApp = appBaseClass.extend({
 
   introTriangles: [],
   introRows: 9,
+  
   /*
   * each digit represents the number
   * of triangles in a column.
@@ -10,15 +11,57 @@ var NoCanvasApp = appBaseClass.extend({
   * 0 -> empty column -> whitespace
   */
   introColumnsCount: [
-  1, 1, 3, 3, 4, 2,
-  0,
-  5, 3, 2, 2, 7, 1,
-  0,
-  2, 8,
-  0,
-  0,
-  1, 3, 3, 5, 4,
-  0],
+    1, 1, 3, 3, 4, 2,
+    0,
+    5, 3, 2, 2, 7, 1,
+    0,
+    2, 8,
+    0,
+    0,
+    1, 3, 3, 5, 4,
+    0
+  ],
+
+  colors: [
+    ['#DDDBD2', 0],
+    ['#DEDBD2', 1],
+    ['#DEDBD3', 2],
+    ['#DEDCD3', 3],
+    ['#DFDCD3', 4],
+    ['#DFDCD4', 5],
+    ['#DFDDD4', 6],
+    ['#E0DDD4', 7],
+    ['#E0DDD5', 8],
+    ['#E0DED5', 9],
+    ['#E1DED5', 10],
+    ['#E1DED6', 11],
+    ['#E1DFD6', 12],
+    ['#E2DFD6', 13],
+    ['#E2DFD7', 14],
+    ['#E2E0D7', 15],
+    ['#E3E0D7', 16],
+    ['#E3E0D8', 17],
+    ['#E4E1D8', 18],
+    ['#E4E1D9', 18],
+    ['#E4E2D9', 17],
+    ['#E5E2D9', 16],
+    ['#E5E2DA', 15],
+    ['#E5E3DA', 14],
+    ['#E6E3DA', 13],
+    ['#E6E3DB', 12],
+    ['#E7E4DB', 11],
+    ['#E7E4DC', 10],
+    ['#E7E5DC', 9],
+    ['#E8E5DC', 8],
+    ['#E8E5DD', 7],
+    ['#E9E6DD', 6],
+    ['#E9E6DE', 5],
+    ['#EAE7DE', 4],
+    ['#EAE7DF', 3],
+    ['#EBE8DF', 2],
+    ['#EBE8E0', 1],
+    ['#ECE9E0', 0]
+  ],
   triangleWidth: 20,
   
   /**
@@ -29,35 +72,31 @@ var NoCanvasApp = appBaseClass.extend({
     this.device = opt.device || 'desktop';
     this.views = {
       content: document.getElementById('content'),
+      overlay: document.getElementById('overlay'),
       intro: document.getElementById('intro')
     };
 
     this.setIntroElements();
     this.setIntroBounds();
+    this.setContentBounds();
+
     this.triggerIntroAnimation(_.bind(function() {
       this.setContentElements();
-      this.setContentBounds();
+      $(this.views.overlay).fadeIn(1000, function() {
+      $(self.views.content).show();
+      });
 
-      $('#intro').on('mouseover touchmove', function() {
+      $(this.views.intro).on('mouseover touchmove', function() {
         $(this).remove();
-        var hidden = 0;
-        var threshold = (self.totalContentTriangles/100 * 20);
-
-        $('#content').on('mouseover', function(e) {
-          if(e.fromElement && e.fromElement.className.indexOf('content-triangle') > -1) {
-            $(e.fromElement).css({
-              visibility: 'hidden'
-            });
-            console.log(hidden, threshold);
-            if(hidden > threshold) {
-              $('#content').fadeOut('200', function() {
-                $('#content').remove();
-              });
-            }
-
-            hidden++;
+        var threshold = (self.totalContentTriangles/100 * 10);
+        $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
+          hidden: 0,
+          toggle: 0,
+          threshold: threshold,
+          views: {
+            overlay: self.views.overlay
           }
-        });
+        }));
       });
 
     }, this));
@@ -67,12 +106,23 @@ var NoCanvasApp = appBaseClass.extend({
 
     this.totalContentTriangles = 700/10 * 300/20;
     var aTriangle = document.createElement('div');
-    aTriangle.className = 'content-triangle';
+    aTriangle.className = 'overlay-triangle';
 
     for(var i = 0; i < this.totalContentTriangles; i++) {
       var a = aTriangle.cloneNode();
-      if(i%2 !== 0) a.className += ' odd';
-      this.views.content.appendChild(a);
+
+      var c = this.getColor();
+      a.style.borderLeftColor = c;
+      a.style.borderRightColor = c;
+
+      if(i%2 !== 0) {
+        a.className += ' odd';
+      } else {
+        a.style.borderBottomColor = c;
+      }
+
+      a['data-index'] = i;
+      this.views.overlay.appendChild(a);
     }
 
   },
@@ -90,6 +140,8 @@ var NoCanvasApp = appBaseClass.extend({
     yPos = yPos - yPos%this.triangleWidth;
     this.views.content.style.left = xPos + 'px';
     this.views.content.style.top = yPos + 'px';
+    this.views.overlay.style.left = xPos + 'px';
+    this.views.overlay.style.top = yPos + 'px';
   },
 
   setIntroElements: function() {
@@ -125,6 +177,54 @@ var NoCanvasApp = appBaseClass.extend({
     this.views.intro.style.top = yPos + 'px';
     this.views.intro.style.height = introHeight + 'px';
     this.views.intro.style.width = introWidth + 'px';
+  },
+
+  deleteTrianglesUnderCursor: function(e) {
+    e.preventDefault();
+    if((e.fromElement && e.fromElement.className.indexOf('overlay-triangle') > -1) ||
+       (e.target && e.target.className && e.target.className.indexOf('overlay-triangle') > -1)) {
+      
+
+      console.log(e.originalEvent.pageX, e.originalEvent.pageY);
+      console.log('yo');
+      if(e.originalEvent.pageX && e.originalEvent.pageY)
+        var t = document.elementFromPoint(e.originalEvent.pageX, e.originalEvent.pageY);
+
+      console.log(t);
+
+      var baseIndex = e.fromElement?e.fromElement['data-index']:t['data-index'];
+      var indices = [];
+      var elements = [];
+
+      if(this.toggle) {
+        this.toggle = false;
+        indices = [baseIndex, baseIndex + 70, baseIndex + 2, baseIndex + 1];
+      } else {
+        this.toggle = true;
+        indices = [baseIndex + 3, baseIndex - 67, baseIndex + 2, baseIndex + 1];
+      }
+      
+      for(var i in indices) {
+        elements.push($(this.views.overlay)[0].childNodes[indices[i]]);
+      }
+
+      setTimeout(function() {
+        $(elements).css({
+          visibility: 'hidden'
+        });
+      }, 1);
+
+      if(this.hidden > this.threshold) {
+        $(this.views.overlay).fadeOut('400', function() {
+          if(this.views) {
+            $(this.views.overlay).remove();
+            this.views.overlay = null;
+          }
+        });
+      }
+
+      this.hidden++;
+    }
   },
 
   triggerIntroAnimation: function(cb) {
@@ -250,6 +350,29 @@ var NoCanvasApp = appBaseClass.extend({
     }
 
     return splitArray;
+
+  },
+
+  getRandomInt: function(min, max) {
+    return Math.round(Math.random() * (max - min + 1)) + min;
+  },
+
+  getColor: function() {
+    
+    var w = 0,
+        cumW = 0;
+
+    for(var k in this.colors) {
+      w += this.colors[k][1];
+    }
+
+    var rand = Math.floor(Math.random() * w);
+
+    for(var l in this.colors) {
+      cumW += this.colors[l][1];
+      if(rand < cumW)
+        return this.colors[l][0];
+    }
 
   }
 });
