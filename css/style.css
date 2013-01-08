@@ -14,7 +14,10 @@ body {
     height: 100%;
     -webkit-user-drag: none;
     -webkit-user-select: none;
-    -webkit-user-modify: none;
+    -moz-user-select: none;
+    -moz-user-drag: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 #content {
@@ -23,9 +26,10 @@ body {
   position: absolute;
   background: transparent url(../img/message.png?) no-repeat top left;
   z-index: 5;
-  display: none;
     -webkit-user-drag: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -moz-user-drag: none;
     
 }
 
@@ -448,3 +452,14 @@ body {
 
 
 
+
+
+
+
+
+canvas {
+  width: 700px;
+  height: 300px;
+  position: absolute;
+  z-index: 10;
+}

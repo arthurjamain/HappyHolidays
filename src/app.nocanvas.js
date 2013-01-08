@@ -22,46 +22,6 @@ var NoCanvasApp = appBaseClass.extend({
     0
   ],
 
-  colors: [
-    ['#DDDBD2', 0],
-    ['#DEDBD2', 1],
-    ['#DEDBD3', 2],
-    ['#DEDCD3', 3],
-    ['#DFDCD3', 4],
-    ['#DFDCD4', 5],
-    ['#DFDDD4', 6],
-    ['#E0DDD4', 7],
-    ['#E0DDD5', 8],
-    ['#E0DED5', 9],
-    ['#E1DED5', 10],
-    ['#E1DED6', 11],
-    ['#E1DFD6', 12],
-    ['#E2DFD6', 13],
-    ['#E2DFD7', 14],
-    ['#E2E0D7', 15],
-    ['#E3E0D7', 16],
-    ['#E3E0D8', 17],
-    ['#E4E1D8', 18],
-    ['#E4E1D9', 18],
-    ['#E4E2D9', 17],
-    ['#E5E2D9', 16],
-    ['#E5E2DA', 15],
-    ['#E5E3DA', 14],
-    ['#E6E3DA', 13],
-    ['#E6E3DB', 12],
-    ['#E7E4DB', 11],
-    ['#E7E4DC', 10],
-    ['#E7E5DC', 9],
-    ['#E8E5DC', 8],
-    ['#E8E5DD', 7],
-    ['#E9E6DD', 6],
-    ['#E9E6DE', 5],
-    ['#EAE7DE', 4],
-    ['#EAE7DF', 3],
-    ['#EBE8DF', 2],
-    ['#EBE8E0', 1],
-    ['#ECE9E0', 0]
-  ],
   triangleWidth: 20,
   
   /**
@@ -185,34 +145,57 @@ var NoCanvasApp = appBaseClass.extend({
        (e.target && e.target.className && e.target.className.indexOf('overlay-triangle') > -1)) {
       
 
-      console.log(e.originalEvent.pageX, e.originalEvent.pageY);
-      console.log('yo');
-      if(e.originalEvent.pageX && e.originalEvent.pageY)
+      var baseIndex = 0;
+      if(e.fromElement) {
+        baseIndex = e.fromElement['data-index'];
+      } else if(e.originalEvent.pageX && e.originalEvent.pageY) {
         var t = document.elementFromPoint(e.originalEvent.pageX, e.originalEvent.pageY);
+        baseIndex = t['data-index'];
+      }
 
-      console.log(t);
-
-      var baseIndex = e.fromElement?e.fromElement['data-index']:t['data-index'];
       var indices = [];
       var elements = [];
 
-      if(this.toggle) {
-        this.toggle = false;
-        indices = [baseIndex, baseIndex + 70, baseIndex + 2, baseIndex + 1];
-      } else {
-        this.toggle = true;
-        indices = [baseIndex + 3, baseIndex - 67, baseIndex + 2, baseIndex + 1];
-      }
-      
-      for(var i in indices) {
-        elements.push($(this.views.overlay)[0].childNodes[indices[i]]);
-      }
+      if(this.toggle === 0) {
 
-      setTimeout(function() {
-        $(elements).css({
-          visibility: 'hidden'
-        });
-      }, 1);
+        this.toggle++;
+        indices = [baseIndex, baseIndex + 70, baseIndex + 2, baseIndex + 1];
+        
+        for(var i in indices) {
+          var el = $(this.views.overlay)[0].childNodes[indices[i]];
+          
+          $(el).css({
+            visibility: 'hidden'
+          });
+
+        }
+
+      } else if(this.toggle == 3) {
+        this.toggle++;
+        indices = [baseIndex, baseIndex + 1, baseIndex - 1, baseIndex - 69];
+        supplementaryTriangles = [baseIndex - 2, baseIndex - 70];
+
+        for(var j in supplementaryTriangles) {
+          var sup = $(this.views.overlay)[0].childNodes[supplementaryTriangles[j]];
+          $(sup).css({
+            borderBottomColor: 'transparent'
+          });
+        }
+        for(var k in indices) {
+          var el = $(this.views.overlay)[0].childNodes[indices[k]];
+
+          $(el).css({
+            visibility: 'hidden'
+          });
+
+        }
+      } else {
+        if(this.toggle%5 === 0) {
+          this.toggle = 0;
+        } else {
+          this.toggle ++;
+        }
+      }
 
       if(this.hidden > this.threshold) {
         $(this.views.overlay).fadeOut('400', function() {
