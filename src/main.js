@@ -1,37 +1,20 @@
-/*
-* TODO : Don't forget to unbind app from window.
-*/
-
-if(isCanvasSupported()) {
-  Sid.js('src/app.canvas.js', function() {
-    $(function() {
-      window.app = new CanvasApp({
-        device: 'desktop'
-      });
-    });
-  });
-} else {
-  Sid.js('src/app.nocanvas.js', function() {
-    $(function() {
-      window.app = new NoCanvasApp({
-        device: 'desktop'
-      });
-    });
-  });
-}
-
-
 /**
 * Create a quick/light base class
-* for the app which allows the handling of
-* multiple devices / technologies fairly easily
+* for the app
 **/
 var appBaseClass = function (opt) {
-  var i = document.location.hash;
-  if(i && i.length && i.substr(1).length)
-    $('#content').css({
-      backgroundImage: 'url(img/'+i.substr(1)+'.png?)'
-    });
+  var h = document.location.hash;
+  if(h && h.length && h.substr(1).length) {
+    if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
+      $('#content').css({
+        backgroundImage: 'url(img/'+h.substr(1)+'_large.png?)'
+      });
+    } else {
+      $('#content').css({
+        backgroundImage: 'url(img/'+h.substr(1)+'.png?)'
+      });
+    }
+  }
   appBaseClass.initialize(opt);
 };
 appBaseClass.extend = function(opt) {
@@ -41,6 +24,42 @@ appBaseClass.extend = function(opt) {
   _.extend(appBaseClass, opt);
   return appBaseClass;
 };
+
+
+/*
+* TODO : Don't forget to unbind app from window.
+*/
+/*
+* Main entry point
+*/
+if(isCanvasSupported()) {
+  Sid.js('src/app.canvas.js', function() {
+    $(function() {
+      // Waiting for the background image to be fully loaded.
+      $('<img />').attr('src', 'img/background.png').on('load', function() {
+        window.app = new CanvasApp({
+          device: 'desktop'
+        });
+      });
+    });
+  });
+} else {
+  Sid.js('src/app.nocanvas.js', function() {
+    $(function() {
+      // Waiting for the background image to be fully loaded.
+      $('<img />').attr('src', 'img/background.png').on('load', function() {
+        window.app = new NoCanvasApp({
+          device: 'desktop'
+        });
+      });
+    });
+  });
+}
+
+// All the colors of the background pattern. To get them, run
+// imagemagicks' identify -verbose on the png.
+// They are weighed in a normal/gaussian way in order to be distributed
+// when either the canvas or the DOM triangles are being drawn.
 appBaseClass.colors = [
   // color  , weight
   ['#DDDBD2', 0],
@@ -82,6 +101,11 @@ appBaseClass.colors = [
   ['#EBE8E0', 1],
   ['#ECE9E0', 0]
 ];
+
+// Those are the coordinates (relative to the topleft point of the canvas)
+// of the various points composing the animated triangles (the 2013 ones)
+// They are drawn and animated sequencially, making their indexes
+// somewhat important regarding the final rendering.
 appBaseClass.animatedTriangles = [
   { x: 0, y: 160, reverted: true },
   { x: 20, y: 160 },
@@ -142,6 +166,8 @@ appBaseClass.animatedTriangles = [
   { x: 440, y: 60 },
   { x: 440, y: 120 }
 ];
+
+// 
 appBaseClass.digits = [
   {
     startIndex: 0,
@@ -161,43 +187,43 @@ appBaseClass.digits = [
   }
 ];
 appBaseClass.showInstructionPicto = function() {
-    var toggle = 1;
-    var inst = document.getElementById('instructions');
+  var toggle = 1;
+  var inst = document.getElementById('instructions');
 
-    $(inst).fadeIn(600);
+  $(inst).fadeIn(600);
 
-    if(isMobile.apple.device || isMobile.android.device || isMobile.seven_inch) {
-      $(inst).css({
-        backgroundImage: 'url(..img/pictocomp.png)'
-      });
-    } else {
-      $(inst).css({
-        backgroundImage: 'url(img/pictocomp_noresize.png)',
-        width: 75,
-        height: 75
-      });
-    }
-    if(Modernizr.csstransitions) {
-      appBaseClass.instructionsLoop = setInterval(_.bind(function() {
-        toggle *= -1;
-        var c = (toggle < 0) ? 'toLeft' : 'toRight';
-        inst.className = c;
-      }, this), 2000);
-    } else {
+  if(isMobile.apple.device || isMobile.android.device || isMobile.seven_inch) {
+    $(inst).css({
+      backgroundImage: 'url(img/pictophone.png)'
+    });
+  } else {
+    $(inst).css({
+      backgroundImage: 'url(img/pictocomp_noresize.png)',
+      width: 75,
+      height: 75
+    });
+  }
+  if(Modernizr.csstransitions) {
+    appBaseClass.instructionsLoop = setInterval(_.bind(function() {
+      toggle *= -1;
+      var c = (toggle < 0) ? 'toLeft' : 'toRight';
+      inst.className = c;
+    }, this), 2000);
+  } else {
 
+    $(inst).animate({
+      left: '+=' + 150
+    }, 1000, 'easeInOutQuad', function() {});
+
+    appBaseClass.instructionsLoop = setInterval(_.bind(function() {
+      toggle *= -1;
+      var l = (toggle < 0) ? -300 : 300;
       $(inst).animate({
-        left: '+=' + 150
+        left: '+=' + l
       }, 1000, 'easeInOutQuad', function() {});
-
-      appBaseClass.instructionsLoop = setInterval(_.bind(function() {
-        toggle *= -1;
-        var l = (toggle < 0) ? -300 : 300;
-        $(inst).animate({
-          left: '+=' + l
-        }, 1000, 'easeInOutQuad', function() {});
-      }, this), 1200);
-    }
-  };
+    }, this), 1200);
+  }
+};
 
 
 /**
@@ -222,8 +248,8 @@ function isCanvasSupported(){
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] ||
+        window[vendors[x]+'CancelRequestAnimationFrame'];
     }
  
     if (!window.requestAnimationFrame)

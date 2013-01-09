@@ -2,10 +2,12 @@ var CanvasApp = appBaseClass.extend({
 
   views: {
     content: document.getElementById('content'),
+    contentcopy: document.getElementById('contentcopy'),
     instructions: document.getElementById('instructions'),
     canvas: null
   },
   triangleWidth: 20,
+  fadeOutThreshold: 15,
   initialize: function() {
     // By default, the DOM is layed out to match the nocanvas
     // version. Hence this reinit.
@@ -13,28 +15,18 @@ var CanvasApp = appBaseClass.extend({
     this.totalTriangles = 0;
     this.deletedTriangles = 0;
 
-    $(window).on('resize', _.bind(function() {
-      var contentHeight = $(this.views.content).height();
-      var contentWidth = $(this.views.content).width();
-      
-      var xPos = ($(document).width() - contentWidth) / 2,
-          yPos = ($(document).height() - contentHeight) / 2;
-      
-      // Align left / top of the intro block on the previous
-      // small "square" to ensure seamless overlapping of triangles
-      xPos = xPos - xPos%this.triangleWidth;
-      yPos = yPos - yPos%this.triangleWidth;
+    // The threshold is expressed as a percentage of the canvas
+    // that's been cleaned. (Well, that was the plan anyway. I can't be
+    // sure i've actually deleted something yet, meaning that moving the
+    // cursor in a small circle will eventually clear the canvas anyway.)
+    // Android devices tend to sent much less events per second, making it harder
+    // to meet the threshold with a constant %. Thus, we make it vary.
+    if(isMobile.apple.device)
+      this.fadeOutThreshold = 25;
+    if(!isMobile.apple.device && !isMobile.android.device)
+      this.fadeOutThreshold = 65;
 
-      this.views.canvas.style.left = xPos + 'px';
-      this.views.canvas.style.top = yPos + 'px';
-
-      this.views.content.style.left = xPos + 'px';
-      this.views.content.style.top = yPos + 'px';
-
-      this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
-      this.views.instructions.style.top = (yPos + 320) + 'px';
-
-    }, this));
+    $(window).on('resize', _.bind(this.onResize, this));
 
     this.initializeDom();
     this.setContentBounds();
@@ -65,6 +57,7 @@ var CanvasApp = appBaseClass.extend({
   initializeDom: function() {
     $('#intro, #overlay').remove();
     this.views.content.className += ' big';
+    this.views.contentcopy.className += ' big';
     this.views.canvas = document.createElement('canvas');
     this.views.canvas.appendChild(
       document.createTextNode('This should not happen ...'));
@@ -77,7 +70,7 @@ var CanvasApp = appBaseClass.extend({
     var contentWidth = $(this.views.content).width();
     
     var xPos = ($(document).width() - contentWidth) / 2,
-        yPos = ($(document).height() - contentHeight) / 2;
+        yPos = ($(window).height() - contentHeight) / 2;
     
     // Align left / top of the intro block on the previous
     // small "square" to ensure seamless overlapping of triangles
@@ -86,6 +79,9 @@ var CanvasApp = appBaseClass.extend({
 
     this.views.content.style.left = xPos + 'px';
     this.views.content.style.top = yPos + 'px';
+    this.views.contentcopy.style.left = xPos + 'px';
+    this.views.contentcopy.style.top = yPos + 'px';
+
     this.views.canvas.style.left = xPos + 'px';
     this.views.canvas.style.top = yPos + 'px';
 
@@ -107,19 +103,27 @@ var CanvasApp = appBaseClass.extend({
       y: Math.round((this.getY(e) - off.top)/self.triangleWidth)*self.triangleWidth
     };
 
-    if(this.deletingToggler == 2) {
+    if(this.deletingToggler) {
+      this.deletingToggler = 0;
       self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, false);
       self.deletedTriangles += 4;
-    } else if(this.deletingToggler == 4) {
+    } else {
+      this.deletingToggler = 1;
       self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, true);
       self.deletedTriangles += 4;
     }
 
-    this.deletingToggler = (this.deletingToggler > 4) ? 0 : this.deletingToggler + 1 ;
-    if(self.deletedTriangles >= (self.totalTriangles / 100 * 15)) {
-      $('canvas').fadeOut(600);
+    //this.deletingToggler = (this.deletingToggler > 4) ? 0 : this.deletingToggler + 1 ;
+    if(self.deletedTriangles >= (self.totalTriangles / 100 * this.fadeOutThreshold)) {
+      $('#contentcopy').fadeIn(1000);
     }
 
+    // So yeah, as per usual with android there's at least one or two main
+    // devices whose behaviour is broken. This fix forces a redraw of the
+    // canvas element.
+    if(isMobile.android.device) {
+      this.onResize(null, true);
+    }
   },
 
   getX: function(e) {
@@ -229,18 +233,18 @@ var CanvasApp = appBaseClass.extend({
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.triangleWidth*2, y);
       ctx.lineTo(x, y + this.triangleWidth*2);
-    ctx.save();
-    ctx.clip();
-    ctx.clearRect(x, y, x + this.triangleWidth * 2, y + this.triangleWidth * 2);
-    ctx.restore();
+      ctx.save();
+      ctx.clip();
+      ctx.clearRect(x, y, x + this.triangleWidth * 2, y + this.triangleWidth * 2);
+      ctx.restore();
     } else {
       ctx.moveTo(x + 40, y);
       ctx.lineTo(x + this.triangleWidth*2, y + 40);
       ctx.lineTo(x, y + this.triangleWidth*2);
-    ctx.save();
-    ctx.clip();
-    ctx.clearRect(0, 0, 700, 300);
-    ctx.restore();
+      ctx.save();
+      ctx.clip();
+      ctx.clearRect(0, 0, 700, 300);
+      ctx.restore();
     }
   },
 
@@ -303,7 +307,7 @@ var CanvasApp = appBaseClass.extend({
     var itv = setInterval(_.bind(function() {
       i--;
       alpha = alpha - 1/ticks;
-      
+
       // Just try removing this if you dare...
       // wtfjs.
       alpha = alpha < 0 ? 0 : alpha;
@@ -390,6 +394,39 @@ var CanvasApp = appBaseClass.extend({
       ctx.lineTo(x, y + this.triangleWidth + 1);
       ctx.fill();
     }
+  },
+
+  onResize: function(e, force) {
+    var contentHeight = $(this.views.content).height();
+    var contentWidth = $(this.views.content).width();
+    
+    var xPos = ($(document).width() - contentWidth) / 2,
+        yPos = ($(window).height() - contentHeight) / 2;
+    
+    // Align left / top of the intro block on the previous
+    // small "square" to ensure seamless overlapping of triangles
+    xPos = xPos - xPos%this.triangleWidth;
+    yPos = yPos - yPos%this.triangleWidth;
+
+    /*
+     * this param is used to forcefuly move the canvas around,
+     * solving a rendering problem on android 4.
+     */
+    if(force)
+      this.forceResizeOffset = this.forceResizeOffset * -1 || 1;
+
+    this.views.canvas.style.left = (xPos + (this.forceResizeOffset || 0)) + 'px';
+    this.views.canvas.style.top = (yPos) + 'px';
+
+    this.views.content.style.left = xPos + 'px';
+    this.views.content.style.top = yPos + 'px';
+
+    this.views.contentcopy.style.left = xPos + 'px';
+    this.views.contentcopy.style.top = yPos + 'px';
+
+    this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+    this.views.instructions.style.top = (yPos + 320) + 'px';
+
   },
 
   getColor: function() {
