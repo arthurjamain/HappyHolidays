@@ -27,6 +27,11 @@ if(isCanvasSupported()) {
 * multiple devices / technologies fairly easily
 **/
 var appBaseClass = function (opt) {
+  var i = document.location.hash;
+  if(i && i.length && i.substr(1).length)
+    $('#content').css({
+      backgroundImage: 'url(img/'+i.substr(1)+'.png?)'
+    });
   appBaseClass.initialize(opt);
 };
 appBaseClass.extend = function(opt) {
@@ -143,18 +148,38 @@ appBaseClass.digits = [
     span: 14
   },
   {
-    startIndex: 15,
+    startIndex: 14,
     span: 20
   },
   {
-    startIndex: 35,
+    startIndex: 34,
     span: 10
   },
   {
-    startIndex: 45,
+    startIndex: 44,
     span: 16
   }
 ];
+appBaseClass.showInstructionPicto = function() {
+    var toggle = 1;
+
+    $(this.views.instructions).css({
+      opacity: 0,
+      display: 'block'
+    });
+    $(this.views.instructions).animate({
+      opacity: 1,
+      transform: 'translateX(' + 250 * toggle + ')'
+    }, 600);
+
+    setInterval(_.bind(function() {
+      toggle *= -1;
+      $(this.views.instructions).animate({
+        transform: 'translateX(' + 250 * toggle + ')'
+      }, 1000, 'easeInOutQuad', function() {});
+    }, this), 1200);
+
+  };
 
 
 /**
@@ -197,4 +222,11 @@ function isCanvasSupported(){
         };
 }());
 
+$.extend($.easing,
+{
+  easeInOutQuad: function (x, t, b, c, d) {
+    if ((t/=d/2) < 1) return c/2*t*t + b;
+    return -c/2 * ((--t)*(t-2) - 1) + b;
+  }
+});
 

@@ -40,6 +40,29 @@ var NoCanvasApp = appBaseClass.extend({
     this.setIntroBounds();
     this.setContentBounds();
 
+    $(window).on('resize', _.bind(function() {
+      var contentHeight = $(this.views.content).height();
+      var contentWidth = $(this.views.content).width();
+      
+      var xPos = ($(document).width() - contentWidth) / 2,
+          yPos = ($(document).height() - contentHeight) / 2;
+      
+      // Align left / top of the intro block on the previous
+      // small "square" to ensure seamless overlapping of triangles
+      xPos = xPos - xPos%this.triangleWidth;
+      yPos = yPos - yPos%this.triangleWidth;
+
+      this.views.canvas.style.left = xPos + 'px';
+      this.views.canvas.style.top = yPos + 'px';
+
+      this.views.content.style.left = xPos + 'px';
+      this.views.content.style.top = yPos + 'px';
+
+      this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+      this.views.instructions.style.top = (yPos + 320) + 'px';
+
+    }, this));
+
     this.triggerIntroAnimation(_.bind(function() {
       this.setContentElements();
       $(this.views.overlay).fadeIn(1000, function() {
@@ -48,6 +71,7 @@ var NoCanvasApp = appBaseClass.extend({
 
       $(this.views.intro).on('mouseover touchmove', function() {
         $(this).remove();
+        self.showInstructionPicto();
         var threshold = (self.totalContentTriangles/100 * 10);
         $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
           hidden: 0,

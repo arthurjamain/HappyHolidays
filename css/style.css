@@ -20,17 +20,47 @@ body {
     user-select: none;
 }
 
+#instructions {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-family: HelveticaNeue, Arial, sans-serif;
+  color: #C0BEB7;
+  text-shadow:  0 1px 1px rgba(255, 255, 255, 1);
+  font-size: 1.1em;
+  position: absolute;
+  background: transparent url(../img/pictophone.png) no-repeat top left;
+  background-size: 100% 100%;
+  display: none;
+
+  -webkit-transition-timing-function: cubic-bezier(0.785, 0.135, 0.150, 0.860); 
+   -moz-transition-timing-function: cubic-bezier(0.785, 0.135, 0.150, 0.860); 
+    -ms-transition-timing-function: cubic-bezier(0.785, 0.135, 0.150, 0.860); 
+     -o-transition-timing-function: cubic-bezier(0.785, 0.135, 0.150, 0.860); 
+        transition-timing-function: cubic-bezier(0.785, 0.135, 0.150, 0.860); /* easeInOutCirc */
+        
+}
+
 #content {
   width: 700px;
   height: 300px;
   position: absolute;
   background: transparent url(../img/message.png?) no-repeat top left;
   z-index: 5;
-    -webkit-user-drag: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -moz-user-drag: none;
-    
+  
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -moz-user-drag: none;
+  user-select: none;
+
+  display: none;
+}
+
+#content.big {
+  background-image: url(../img/message_big.png?);
+  background-size: 100% 100%;
 }
 
 #overlay {

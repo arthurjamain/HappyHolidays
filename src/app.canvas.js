@@ -2,6 +2,7 @@ var CanvasApp = appBaseClass.extend({
 
   views: {
     content: document.getElementById('content'),
+    instructions: document.getElementById('instructions'),
     canvas: null
   },
   triangleWidth: 20,
@@ -9,34 +10,55 @@ var CanvasApp = appBaseClass.extend({
     // By default, the DOM is layed out to match the nocanvas
     // version. Hence this reinit.
     var self = this;
+    this.totalTriangles = 0;
+    this.deletedTriangles = 0;
+
+    $(window).on('resize', _.bind(function() {
+      var contentHeight = $(this.views.content).height();
+      var contentWidth = $(this.views.content).width();
+      
+      var xPos = ($(document).width() - contentWidth) / 2,
+          yPos = ($(document).height() - contentHeight) / 2;
+      
+      // Align left / top of the intro block on the previous
+      // small "square" to ensure seamless overlapping of triangles
+      xPos = xPos - xPos%this.triangleWidth;
+      yPos = yPos - yPos%this.triangleWidth;
+
+      this.views.canvas.style.left = xPos + 'px';
+      this.views.canvas.style.top = yPos + 'px';
+
+      this.views.content.style.left = xPos + 'px';
+      this.views.content.style.top = yPos + 'px';
+
+      this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+      this.views.instructions.style.top = (yPos + 320) + 'px';
+
+    }, this));
+
     this.initializeDom();
     this.setContentBounds();
-    this.fillCanvasWithTiledTriangles();
+    self.fillCanvasWithTiledTriangles();
     this.fillCanvasWithAnimatedTriangles(function() {
-      this.fadeInSeparateLetters(function() {
-        var toggler = 0;
-        $(document).on('mousemove', 'canvas', function(e) {
-          off = $('canvas').position();
-          var deletedPoint = {
-            x: Math.round((e.pageX - off.left)/self.triangleWidth)*self.triangleWidth,
-            y: Math.round((e.pageY - off.top)/self.triangleWidth)*self.triangleWidth
-          };
+      this.fadeInSeparateLetters(_.bind(function() {
+        this.deletingToggler = 0;
 
-          if(toggler == 2)
-            self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, false);
-          
-          if(toggler == 5)
-            self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, true);
-          
-          toggler = (toggler > 5) ? 0 : toggler + 1 ;
+        this.showInstructionPicto();
+
+        $(document).one('mousemove touchstart', 'canvas', function() {
+          self.paintOverAnimatedTriangles();
+          $(self.views.content).show();
         });
-      });
+
+        $(document).on('mousemove touchmove', 'canvas', _.bind(this.deleteTriangleUnderCursor, this));
+      }, this));
       window.theapp = this;
     });
   },
 
   initializeDom: function() {
     $('#intro, #overlay').remove();
+    this.views.content.className += ' big';
     this.views.canvas = document.createElement('canvas');
     this.views.canvas.appendChild(
       document.createTextNode('This should not happen ...'));
@@ -60,8 +82,94 @@ var CanvasApp = appBaseClass.extend({
     this.views.content.style.top = yPos + 'px';
     this.views.canvas.style.left = xPos + 'px';
     this.views.canvas.style.top = yPos + 'px';
-    this.views.canvas.width = '700';
-    this.views.canvas.height = '300';
+
+    if(this.views.canvas.width !== contentWidth)
+      this.views.canvas.width = contentWidth;
+    if(this.views.canvas.height !== contentWidth)
+      this.views.canvas.height = contentHeight;
+
+    this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+    this.views.instructions.style.top = yPos + 320;
+  },
+
+  deleteTriangleUnderCursor: function(e) {
+    e.preventDefault();
+    var self = this;
+    off = $('canvas').position();
+    var deletedPoint = {
+      x: Math.round((this.getX(e) - off.left)/self.triangleWidth)*self.triangleWidth,
+      y: Math.round((this.getY(e) - off.top)/self.triangleWidth)*self.triangleWidth
+    };
+
+    if(this.deletingToggler == 2) {
+      self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, false);
+      self.deletedTriangles += 4;
+    } else if(this.deletingToggler == 4) {
+      self.clearLargeTriangle(deletedPoint.x, deletedPoint.y, true);
+      self.deletedTriangles += 4;
+    }
+
+    this.deletingToggler = (this.deletingToggler > 4) ? 0 : this.deletingToggler + 1 ;
+    if(self.deletedTriangles >= (self.totalTriangles / 100 * 15)) {
+      $('canvas').fadeOut(600);
+    }
+
+  },
+
+  getX: function(e) {
+    if(e.pageX)
+      return e.pageX;
+    if(e.originalEvent) {
+      if(e.originalEvent.pageX)
+        return e.originalEvent.pageX;
+      if(e.originalEvent.touches && e.originalEvent.touches.length) {
+        if(e.originalEvent.touches[0].pageX)
+          return e.originalEvent.touches[0].pageX;
+      }
+      if(e.originalEvent.x)
+        return e.originalEvent.x;
+    }
+  },
+
+  getY: function(e) {
+    if(e.pageY)
+      return e.pageY;
+    if(e.originalEvent) {
+      if(e.originalEvent.pageY)
+        return e.originalEvent.pageY;
+      if(e.originalEvent.touches && e.originalEvent.touches.length) {
+        if(e.originalEvent.touches[0].pageY)
+          return e.originalEvent.touches[0].pageY;
+      }
+      if(e.originalEvent.y)
+        return e.originalEvent.y;
+    }
+  },
+
+  paintOverAnimatedTriangles: function() {
+    var ctx = this.views.canvas.getContext('2d');
+    var self = this;
+    for(var i in this.animatedTriangles) {
+      var t = this.animatedTriangles[i],
+          ac = this.hexToRgb(this.getColor());
+
+      var ctx = this.views.canvas.getContext('2d');
+      if(t.reverted) {
+        ctx.fillStyle = "rgba("+ac.r+", "+ac.g+", "+ac.b+", 1)";
+        ctx.beginPath();
+        ctx.moveTo(t.x + this.triangleWidth, t.y + this.triangleWidth);
+        ctx.lineTo(t.x + this.triangleWidth, t.y);
+        ctx.lineTo(t.x, t.y + this.triangleWidth);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = "rgba("+ac.r+", "+ac.g+", "+ac.b+", 1)";
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(t.x + this.triangleWidth + 4, t.y);
+        ctx.lineTo(t.x, t.y + this.triangleWidth + 4);
+        ctx.fill();
+      }
+    }
   },
 
   fillCanvasWithAnimatedTriangles: function(cb) {
@@ -98,7 +206,7 @@ var CanvasApp = appBaseClass.extend({
               self.fadeInTriangle(self.animatedTriangles[this.j].x, self.animatedTriangles[this.j].y, 150, self.animatedTriangles[this.j].reverted);
             if(this.i == self.digits.length - 1 && this.j == self.digits[this.i].startIndex + self.digits[this.i].span - 1) {
               setTimeout(function(){
-                if(typeof cb === 'function') cb.call(self);
+                if(typeof cb === 'function') cb();
               }, 150);
             }
           }, {i: this.i, j: j}), 40 * k);
@@ -152,15 +260,15 @@ var CanvasApp = appBaseClass.extend({
         ctx.fillStyle = "rgba(255, 255, 255, "+ (alpha) +")";
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(x + this.triangleWidth, y);
-        ctx.lineTo(x, y + this.triangleWidth);
+        ctx.lineTo(x + this.triangleWidth + 1, y);
+        ctx.lineTo(x, y + this.triangleWidth + 1);
         ctx.fill();
       } else {
         //br
         ctx.beginPath();
         ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
-        ctx.lineTo(x + this.triangleWidth, y);
-        ctx.lineTo(x, y + this.triangleWidth);
+        ctx.lineTo(x + this.triangleWidth, y + 1);
+        ctx.lineTo(x + 1, y + this.triangleWidth);
         ctx.save();
         ctx.clip();
         ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
@@ -198,9 +306,9 @@ var CanvasApp = appBaseClass.extend({
       if(!rev) {
 
         ctx.beginPath();
-        ctx.moveTo(x - 1, y - 1);
-        ctx.lineTo(x + this.triangleWidth + 1 , y - 1);
-        ctx.lineTo(x - 1, y + this.triangleWidth + 2);
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + this.triangleWidth + 2 , y);
+        ctx.lineTo(x, y + this.triangleWidth + 2);
         ctx.save();
         ctx.clip();
         ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
@@ -241,30 +349,40 @@ var CanvasApp = appBaseClass.extend({
   fillCanvasWithTiledTriangles: function() {
     var w = this.views.canvas.width;
     var h = this.views.canvas.height;
-    var ctx = this.views.canvas.getContext('2d');
     var ac;
 
     for (var x=0; x < w; x+= this.triangleWidth) {
       for (var y=0; y < h; y+= this.triangleWidth) {
 
-        ac = this.hexToRgb(this.getColor());
         //triangle down
-        ctx.fillStyle = "rgba("+ac.r+", "+ac.g+", "+ac.b+", 1)";
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + this.triangleWidth, y);
-        ctx.lineTo(x, y + this.triangleWidth);
-        ctx.fill();
-
         ac = this.hexToRgb(this.getColor());
+        this.drawTiledTriangle(x, y, false, ac);
+
         //triangle up
-        ctx.fillStyle = "rgba("+ac.r+", "+ac.g+", "+ac.b+", 1)";
-        ctx.beginPath();
-        ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
-        ctx.lineTo(x + this.triangleWidth, y);
-        ctx.lineTo(x, y + this.triangleWidth);
-        ctx.fill();
+        ac = this.hexToRgb(this.getColor());
+        this.drawTiledTriangle(x, y, true, ac);
+
+        this.totalTriangles += 2;
       }
+    }
+  },
+
+  drawTiledTriangle: function(x, y, rev, rgb) {
+    var ctx = this.views.canvas.getContext('2d');
+    if(rev) {
+      ctx.fillStyle = "rgba("+rgb.r+", "+rgb.g+", "+rgb.b+", 1)";
+      ctx.beginPath();
+      ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
+      ctx.lineTo(x + this.triangleWidth, y);
+      ctx.lineTo(x, y + this.triangleWidth);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = "rgba("+rgb.r+", "+rgb.g+", "+rgb.b+", 1)";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + this.triangleWidth + 1, y);
+      ctx.lineTo(x, y + this.triangleWidth + 1);
+      ctx.fill();
     }
   },
 
