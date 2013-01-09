@@ -162,34 +162,54 @@ appBaseClass.digits = [
 ];
 appBaseClass.showInstructionPicto = function() {
     var toggle = 1;
+    var inst = document.getElementById('instructions');
 
-    $(this.views.instructions).css({
-      opacity: 0,
-      display: 'block'
-    });
-    $(this.views.instructions).animate({
-      opacity: 1,
-      transform: 'translateX(' + 250 * toggle + ')'
-    }, 600);
+    $(inst).fadeIn(600);
 
-    setInterval(_.bind(function() {
-      toggle *= -1;
-      $(this.views.instructions).animate({
-        transform: 'translateX(' + 250 * toggle + ')'
+    if(isMobile.apple.device || isMobile.android.device || isMobile.seven_inch) {
+      $(inst).css({
+        backgroundImage: 'url(..img/pictocomp.png)'
+      });
+    } else {
+      $(inst).css({
+        backgroundImage: 'url(img/pictocomp_noresize.png)',
+        width: 75,
+        height: 75
+      });
+    }
+    if(Modernizr.csstransitions) {
+      appBaseClass.instructionsLoop = setInterval(_.bind(function() {
+        toggle *= -1;
+        var c = (toggle < 0) ? 'toLeft' : 'toRight';
+        inst.className = c;
+      }, this), 2000);
+    } else {
+
+      $(inst).animate({
+        left: '+=' + 150
       }, 1000, 'easeInOutQuad', function() {});
-    }, this), 1200);
 
+      appBaseClass.instructionsLoop = setInterval(_.bind(function() {
+        toggle *= -1;
+        var l = (toggle < 0) ? -300 : 300;
+        $(inst).animate({
+          left: '+=' + l
+        }, 1000, 'easeInOutQuad', function() {});
+      }, this), 1200);
+    }
   };
 
 
 /**
 * HELPERS
 **/
-
+// Canvas support
 function isCanvasSupported(){
   var elem = document.createElement('canvas');
   return !!(elem.getContext && elem.getContext('2d'));
 }
+// isMobile()
+(function(a){a||(a=window.isMobile={});var c=/Android/i,b=navigator.userAgent;a.apple={};a.apple.phone=/iPhone/i.test(b);a.apple.ipod=/iPod/i.test(b);a.apple.tablet=/iPad/i.test(b);a.apple.device=a.apple.phone||a.apple.ipod||a.apple.tablet;a.android={};a.android.phone=/(?=.*\bAndroid\b)(?=.*\bMobile\b)/i.test(b);a.android.tablet=!a.android.phone&&c.test(b);a.android.device=a.android.phone||a.android.tablet;a.seven_inch=/(?:Nexus 7|BNTV250|Kindle Fire|Silk|GT-P1000)/i.test(b)})(window.isMobile);
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -222,6 +242,7 @@ function isCanvasSupported(){
         };
 }());
 
+// easing func for jquery
 $.extend($.easing,
 {
   easeInOutQuad: function (x, t, b, c, d) {

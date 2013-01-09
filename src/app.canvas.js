@@ -46,6 +46,12 @@ var CanvasApp = appBaseClass.extend({
         this.showInstructionPicto();
 
         $(document).one('mousemove touchstart', 'canvas', function() {
+
+          if(self.instructionsLoop) {
+            clearInterval(self.instructionsLoop);
+            $(self.views.instructions).fadeOut(500);
+          }
+          
           self.paintOverAnimatedTriangles();
           $(self.views.content).show();
         });

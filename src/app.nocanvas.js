@@ -33,7 +33,8 @@ var NoCanvasApp = appBaseClass.extend({
     this.views = {
       content: document.getElementById('content'),
       overlay: document.getElementById('overlay'),
-      intro: document.getElementById('intro')
+      intro: document.getElementById('intro'),
+      instructions: document.getElementById('instructions')
     };
 
     this.setIntroElements();
@@ -65,13 +66,21 @@ var NoCanvasApp = appBaseClass.extend({
 
     this.triggerIntroAnimation(_.bind(function() {
       this.setContentElements();
+
       $(this.views.overlay).fadeIn(1000, function() {
-      $(self.views.content).show();
+        $(self.views.content).show();
       });
+      
+      self.showInstructionPicto();
 
       $(this.views.intro).on('mouseover touchmove', function() {
         $(this).remove();
-        self.showInstructionPicto();
+
+        if(self.instructionsLoop) {
+          clearInterval(self.instructionsLoop);
+          $(self.views.instructions).remove();
+        }
+
         var threshold = (self.totalContentTriangles/100 * 10);
         $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
           hidden: 0,
@@ -126,6 +135,8 @@ var NoCanvasApp = appBaseClass.extend({
     this.views.content.style.top = yPos + 'px';
     this.views.overlay.style.left = xPos + 'px';
     this.views.overlay.style.top = yPos + 'px';
+    this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+    this.views.instructions.style.top = yPos + 320;
   },
 
   setIntroElements: function() {
