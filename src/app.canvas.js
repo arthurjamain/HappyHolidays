@@ -5,6 +5,7 @@ var CanvasApp = appBaseClass.extend({
     contentcopy: document.getElementById('contentcopy'),
     instructions: document.getElementById('instructions'),
     cover: document.getElementById('cover'),
+    inShad: document.getElementById('insideshadow'),
     canvas: null
   },
   triangleWidth: 20,
@@ -33,17 +34,33 @@ var CanvasApp = appBaseClass.extend({
     this.setContentBounds();
     this.fillCanvasWithTiledTriangles();
 
+
+
     $('<img />').attr('src', 'img/cover.png').on('load', _.bind(function() {
-      this.views.cover.className += ' opened';
-
       setTimeout(_.bind(function() {
-        this.views.coverShadow.className += ' opened';
-      }, this), 650);
 
-      setTimeout(_.bind(function() {
-        this.triggerCanvasAnimation();
-      }, this), 1200);
+
+        this.triggerCardOpening();
+
+        setTimeout(_.bind(function() {
+          this.triggerCanvasAnimation();
+        }, this), 1200);
+      }, this), 1400);
     }, this));
+  },
+
+  triggerCardOpening: function() {
+    if(Modernizr.csstransforms3d) {
+      $(this.views.cover).addClass('opened');
+      $(this.views.inShad).addClass('opened');
+      setTimeout(_.bind(function() {
+        $(this.views.coverShadow).addClass('opened');
+      }, this), 650);
+    } else {
+      $(this.views.cover).fadeOut(1000);
+      $(this.views.inShad).fadeOut(1000);
+      $(this.views.coverShadow).hide();
+    }
   },
 
   triggerCanvasAnimation: function() {
@@ -73,7 +90,7 @@ var CanvasApp = appBaseClass.extend({
   },
 
   initializeDom: function() {
-    $('#intro, #overlay').remove();
+    $('#fake-canvas').remove();
     
     this.views.content.className += ' big';
     this.views.contentcopy.className += ' big';
@@ -132,6 +149,9 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasBackground.style.width = contentWidth - padding * 2;
     this.views.canvasBackground.style.height = contentWidth - padding * 2;
 
+    this.views.inShad.style.left = (xPos - 5) + 'px';
+    this.views.inShad.style.top = (yPos - 5) + 'px';
+
     this.views.cover.style.width = (contentWidth) + 'px';
     this.views.cover.style.height = (contentHeight) + 'px';
     this.views.cover.style.left = (xPos) + 'px';
@@ -143,7 +163,7 @@ var CanvasApp = appBaseClass.extend({
       this.views.canvas.height = contentHeight - padding * 2;
 
     this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
-    this.views.instructions.style.top = yPos + 520;
+    this.views.instructions.style.top = yPos + contentHeight - 150;
   },
 
   deleteTriangleUnderCursor: function(e) {
@@ -166,7 +186,7 @@ var CanvasApp = appBaseClass.extend({
     }
 
     //this.deletingToggler = (this.deletingToggler > 4) ? 0 : this.deletingToggler + 1 ;
-    if(self.deletedTriangles >= (self.totalTriangles / 100 * this.fadeOutThreshold)) {
+    if(self.deletedTriangles >= (this.totalTriangles / 100 * this.fadeOutThreshold)) {
       $('#contentcopy').fadeIn(1000);
     }
 
@@ -412,7 +432,22 @@ var CanvasApp = appBaseClass.extend({
     var w = this.views.canvas.width;
     var h = this.views.canvas.height;
     var ac;
+    var ctx = this.views.canvas.getContext('2d');
 
+    var tg = new Image();
+    tg.onload = function() {
+      ctx.drawImage(tg, 0, 0);
+    };
+    tg.src = 'img/background.png';
+
+    this.totalTriangles = w / (this.triangleWidth / 2) * h / this.triangleWidth;
+
+    return;
+    // Turns out the whole following block is completely useless.
+    // meh...
+    // Drawing each triangle and assigning colors n stuff is unnecessary
+    // when it is possible to draw an image and punch holes in it.
+    /*
     for (var x=0; x < w; x+= this.triangleWidth) {
       for (var y=0; y < h; y+= this.triangleWidth) {
 
@@ -427,6 +462,7 @@ var CanvasApp = appBaseClass.extend({
         this.totalTriangles += 2;
       }
     }
+    */
   },
 
   drawTiledTriangle: function(x, y, rev, rgb) {
@@ -449,16 +485,20 @@ var CanvasApp = appBaseClass.extend({
   },
 
   onResize: function(e, force) {
-    var contentHeight = $(this.views.content).height();
-    var contentWidth = $(this.views.content).width();
+    var contentHeight = parseInt($(this.views.canvasContainer).height(), 10);
+    var contentWidth = parseInt($(this.views.canvasContainer).width(), 10);
+    var shadowWidth = parseInt($(this.views.coverShadow).width(), 10);
     
     var xPos = ($(document).width() - contentWidth) / 2,
         yPos = ($(window).height() - contentHeight) / 2;
     
     // Align left / top of the intro block on the previous
     // small "square" to ensure seamless overlapping of triangles
+    // Incidentally reduces the laggy effect so i'll leave it anyway.
     xPos = xPos - xPos%this.triangleWidth;
     yPos = yPos - yPos%this.triangleWidth;
+
+    var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
 
     /*
      * this param is used to forcefuly move the canvas around,
@@ -467,17 +507,31 @@ var CanvasApp = appBaseClass.extend({
     if(force)
       this.forceResizeOffset = this.forceResizeOffset * -1 || 1;
 
-    this.views.canvas.style.left = (xPos + (this.forceResizeOffset || 0)) + 'px';
-    this.views.canvas.style.top = (yPos) + 'px';
+    this.views.canvas.style.left = padding + (this.forceResizeOffset || 0) + 'px';
 
-    this.views.content.style.left = xPos + 'px';
-    this.views.content.style.top = yPos + 'px';
+    this.views.canvasBackground.style.left = padding;
+    this.views.canvasBackground.style.top = padding;
 
-    this.views.contentcopy.style.left = xPos + 'px';
-    this.views.contentcopy.style.top = yPos + 'px';
+    this.views.content.style.left = (xPos + padding) + 'px';
+    this.views.content.style.top = (yPos + padding) + 'px';
 
-    this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
-    this.views.instructions.style.top = (yPos + 320) + 'px';
+    this.views.contentcopy.style.left = (xPos + padding) + 'px';
+    this.views.contentcopy.style.top = (yPos + padding) + 'px';
+
+    this.views.canvasContainer.style.left = (xPos) + 'px';
+    this.views.canvasContainer.style.top = (yPos) + 'px';
+
+    this.views.coverShadow.style.bottom = $(document).height() - yPos - 3;
+    this.views.coverShadow.style.left = xPos - (contentWidth - shadowWidth) / 2 * -1;
+
+    this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
+    this.views.instructions.style.top = yPos + contentHeight - 150;
+
+    this.views.inShad.style.left = (xPos - 5) + 'px';
+    this.views.inShad.style.top = (yPos - 5) + 'px';
+
+    this.views.cover.style.left = (xPos) + 'px';
+    this.views.cover.style.top = (yPos) + 'px';
 
   },
 

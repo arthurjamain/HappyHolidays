@@ -229,6 +229,49 @@ appBaseClass.showInstructionPicto = function() {
 };
 
 
+appBaseClass.triggerCardOpening = function() {
+
+};
+appBaseClass.setContentBounds = function() {
+  var contentHeight = parseInt($(this.views.fakeCanvas).height(), 10);
+  var contentWidth = parseInt($(this.views.fakeCanvas).width(), 10);
+  var shadowWidth = parseInt($(this.views.coverShadow).width(), 10);
+  var introWidth = parseInt($(this.views.intro).width(), 10);
+  var introHeight = parseInt($(this.views.intro).height(), 10);
+
+  var xPos = ($(document).width() - contentWidth) / 2,
+      yPos = ($(window).height() - contentHeight) / 2;
+  
+  // Align left / top of the intro block on the previous
+  // small "square" to ensure seamless overlapping of triangles
+  xPos = xPos - xPos%this.triangleWidth;
+  yPos = yPos - yPos%this.triangleWidth;
+
+  var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
+
+
+  this.views.intro.style.marginLeft = -introWidth/2;
+  this.views.intro.style.marginTop = -introHeight/2;
+
+  this.views.fakeCanvas.style.left = xPos;
+  this.views.fakeCanvas.style.top = yPos;
+
+  this.views.content.style.left = (xPos + padding) + 'px';
+  this.views.content.style.top = (yPos + padding) + 'px';
+  this.views.contentcopy.style.left = (xPos + padding) + 'px';
+  this.views.contentcopy.style.top = (yPos + padding) + 'px';
+  
+  this.views.inShad.style.left = (xPos - 5) + 'px';
+  this.views.inShad.style.top = (yPos - 5) + 'px';
+
+  this.views.cover.style.width = (contentWidth) + 'px';
+  this.views.cover.style.height = (contentHeight) + 'px';
+  this.views.cover.style.left = (xPos) + 'px';
+  this.views.cover.style.top = (yPos) + 'px';
+
+  this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
+  this.views.instructions.style.top = yPos + contentHeight - 150;
+};
 /**
 * HELPERS
 **/

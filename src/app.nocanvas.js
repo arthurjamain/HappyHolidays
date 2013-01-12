@@ -32,9 +32,14 @@ var NoCanvasApp = appBaseClass.extend({
     this.device = opt.device || 'desktop';
     this.views = {
       content: document.getElementById('content'),
+      contentcopy: document.getElementById('contentcopy'),
       overlay: document.getElementById('overlay'),
       intro: document.getElementById('intro'),
-      instructions: document.getElementById('instructions')
+      cover: document.getElementById('cover'),
+      inShad: document.getElementById('insideshadow'),
+      instructions: document.getElementById('instructions'),
+      fakeCanvas: document.getElementById('fake-canvas')
+
     };
 
     this.setIntroElements();
@@ -63,37 +68,40 @@ var NoCanvasApp = appBaseClass.extend({
       this.views.instructions.style.top = (yPos + 320) + 'px';
 
     }, this));
+    setTimeout(_.bind(function() {
+      $(self.views.inShad).fadeOut(800);
+      $(self.views.cover).fadeOut(800, _.bind(function() {
+        this.triggerIntroAnimation(_.bind(function() {
+          this.setContentElements();
 
-    this.triggerIntroAnimation(_.bind(function() {
-      this.setContentElements();
+          $(this.views.overlay).fadeIn(1000, function() {
+            $(self.views.content).show();
+          });
+          
+          self.showInstructionPicto();
 
-      $(this.views.overlay).fadeIn(1000, function() {
-        $(self.views.content).show();
-      });
-      
-      self.showInstructionPicto();
+          $(this.views.intro).on('mouseover touchmove', function() {
+            $(this).remove();
 
-      $(this.views.intro).on('mouseover touchmove', function() {
-        $(this).remove();
+            if(self.instructionsLoop) {
+              clearInterval(self.instructionsLoop);
+              $(self.views.instructions).remove();
+            }
 
-        if(self.instructionsLoop) {
-          clearInterval(self.instructionsLoop);
-          $(self.views.instructions).remove();
-        }
-
-        var threshold = (self.totalContentTriangles/100 * 10);
-        $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
-          hidden: 0,
-          toggle: 0,
-          threshold: threshold,
-          views: {
-            overlay: self.views.overlay
-          }
-        }));
-      });
-
+            var threshold = (self.totalContentTriangles/100 * 10);
+            $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
+              hidden: 0,
+              toggle: 0,
+              threshold: threshold,
+              views: {
+                overlay: self.views.overlay
+              }
+            }));
+          });
+      }, this));
     }, this));
-  },
+  }, this), 2000);
+},
 
   setContentElements: function() {
 
@@ -119,7 +127,7 @@ var NoCanvasApp = appBaseClass.extend({
     }
 
   },
-
+/*
   setContentBounds: function() {
     var contentHeight = $(this.views.content).height();
     var contentWidth = $(this.views.content).width();
@@ -138,7 +146,7 @@ var NoCanvasApp = appBaseClass.extend({
     this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
     this.views.instructions.style.top = yPos + 320;
   },
-
+*/
   setIntroElements: function() {
     var aTriangle,
         container = this.views.intro,
@@ -168,8 +176,6 @@ var NoCanvasApp = appBaseClass.extend({
     // small "square" to ensure seamless overlapping of triangles
     xPos = xPos - xPos%this.triangleWidth;
     yPos = yPos - yPos%this.triangleWidth;
-    this.views.intro.style.left = xPos + 'px';
-    this.views.intro.style.top = yPos + 'px';
     this.views.intro.style.height = introHeight + 'px';
     this.views.intro.style.width = introWidth + 'px';
   },
