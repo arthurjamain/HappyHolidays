@@ -97,7 +97,7 @@ var NoCanvasApp = appBaseClass.extend({
 
   setContentElements: function() {
 
-    this.totalContentTriangles = 700/10 * 300/20;
+    this.totalContentTriangles = $(this.views.content).width()/10 * $(this.views.content).height()/20;
     var aTriangle = document.createElement('div');
     aTriangle.className = 'overlay-triangle';
 

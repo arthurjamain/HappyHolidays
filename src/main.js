@@ -1,3 +1,31 @@
+
+/*
+* Main entry point
+*/
+if(isCanvasSupported()) {
+  Sid.js('src/app.canvas.js', function() {
+    $(function() {
+      // Waiting for the background image to be fully loaded.
+      $('<img />').attr('src', 'img/background.png').on('load', function() {
+        var app = new CanvasApp({
+          device: 'desktop'
+        });
+      });
+    });
+  });
+} else {
+  Sid.js('src/app.nocanvas.js', function() {
+    $(function() {
+      // Waiting for the background image to be fully loaded.
+      $('<img />').attr('src', 'img/background.png').on('load', function() {
+        var app = new NoCanvasApp({
+          device: 'desktop'
+        });
+      });
+    });
+  });
+}
+
 /**
 * Create a quick/light base class
 * for the app
@@ -15,8 +43,10 @@ var appBaseClass = function (opt) {
       });
     }
   }
+
   appBaseClass.initialize(opt);
 };
+
 appBaseClass.extend = function(opt) {
   for(var k in opt) {
     appBaseClass.prototype[k] = appBaseClass[k];
@@ -24,37 +54,6 @@ appBaseClass.extend = function(opt) {
   _.extend(appBaseClass, opt);
   return appBaseClass;
 };
-
-
-/*
-* TODO : Don't forget to unbind app from window.
-*/
-/*
-* Main entry point
-*/
-if(isCanvasSupported()) {
-  Sid.js('src/app.canvas.js', function() {
-    $(function() {
-      // Waiting for the background image to be fully loaded.
-      $('<img />').attr('src', 'img/background.png').on('load', function() {
-        window.app = new CanvasApp({
-          device: 'desktop'
-        });
-      });
-    });
-  });
-} else {
-  Sid.js('src/app.nocanvas.js', function() {
-    $(function() {
-      // Waiting for the background image to be fully loaded.
-      $('<img />').attr('src', 'img/background.png').on('load', function() {
-        window.app = new NoCanvasApp({
-          device: 'desktop'
-        });
-      });
-    });
-  });
-}
 
 // All the colors of the background pattern. To get them, run
 // imagemagicks' identify -verbose on the png.
@@ -167,7 +166,7 @@ appBaseClass.animatedTriangles = [
   { x: 440, y: 120 }
 ];
 
-// 
+// group members of the above array in digits.
 appBaseClass.digits = [
   {
     startIndex: 0,
@@ -186,6 +185,10 @@ appBaseClass.digits = [
     span: 16
   }
 ];
+
+// The limit of this light architecture is here :
+// this non-canvas-dependent script has to be defined
+// here to avoid code duplication. In a not-really-beautiful way.
 appBaseClass.showInstructionPicto = function() {
   var toggle = 1;
   var inst = document.getElementById('instructions');
@@ -208,7 +211,7 @@ appBaseClass.showInstructionPicto = function() {
       toggle *= -1;
       var c = (toggle < 0) ? 'toLeft' : 'toRight';
       inst.className = c;
-    }, this), 2000);
+    }, this), 1200);
   } else {
 
     $(inst).animate({
@@ -236,37 +239,6 @@ function isCanvasSupported(){
 }
 // isMobile()
 (function(a){a||(a=window.isMobile={});var c=/Android/i,b=navigator.userAgent;a.apple={};a.apple.phone=/iPhone/i.test(b);a.apple.ipod=/iPod/i.test(b);a.apple.tablet=/iPad/i.test(b);a.apple.device=a.apple.phone||a.apple.ipod||a.apple.tablet;a.android={};a.android.phone=/(?=.*\bAndroid\b)(?=.*\bMobile\b)/i.test(b);a.android.tablet=!a.android.phone&&c.test(b);a.android.device=a.android.phone||a.android.tablet;a.seven_inch=/(?:Nexus 7|BNTV250|Kindle Fire|Silk|GT-P1000)/i.test(b)})(window.isMobile);
-
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
- 
-// requestAnimationFrame polyfill by Erik Möller
-// fixes from Paul Irish and Tino Zijdel
- 
-(function() {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] ||
-        window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
- 
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
- 
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-}());
 
 // easing func for jquery
 $.extend($.easing,
