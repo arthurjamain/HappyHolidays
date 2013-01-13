@@ -75,14 +75,15 @@ var NoCanvasApp = appBaseClass.extend({
           this.setContentElements();
 
           $(this.views.overlay).fadeIn(1000, function() {
-            $(self.views.content).show();
+            $(document.getElementById('fake-content')).css({
+              display: 'block'
+            });
           });
           
           self.showInstructionPicto();
 
           $(this.views.intro).on('mouseover touchmove', function() {
             $(this).remove();
-
             if(self.instructionsLoop) {
               clearInterval(self.instructionsLoop);
               $(self.views.instructions).remove();
@@ -161,6 +162,8 @@ var NoCanvasApp = appBaseClass.extend({
 
       container.appendChild(aTriangle);
     }
+
+    $('#insideshadow').remove();
 
   },
 

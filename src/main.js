@@ -17,10 +17,8 @@ if(isCanvasSupported()) {
   Sid.js('src/app.nocanvas.js', function() {
     $(function() {
       // Waiting for the background image to be fully loaded.
-      $('<img />').attr('src', 'img/background.png').on('load', function() {
-        var app = new NoCanvasApp({
-          device: 'desktop'
-        });
+      var app = new NoCanvasApp({
+        device: 'desktop'
       });
     });
   });
@@ -31,14 +29,14 @@ if(isCanvasSupported()) {
 * for the app
 **/
 var appBaseClass = function (opt) {
-  var h = document.location.hash;
+  var h = document.location.hash || '#message';
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
-      $('#content').css({
+      $('#content, #fake-content').css({
         backgroundImage: 'url(img/'+h.substr(1)+'_large.png?)'
       });
     } else {
-      $('#content').css({
+      $('#content, #fake-content').css({
         backgroundImage: 'url(img/'+h.substr(1)+'.png?)'
       });
     }
@@ -258,6 +256,8 @@ appBaseClass.setContentBounds = function() {
 
   this.views.content.style.left = (xPos + padding) + 'px';
   this.views.content.style.top = (yPos + padding) + 'px';
+  this.views.content.style.zIndex = 5;
+
   this.views.contentcopy.style.left = (xPos + padding) + 'px';
   this.views.contentcopy.style.top = (yPos + padding) + 'px';
   

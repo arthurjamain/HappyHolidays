@@ -173,7 +173,7 @@ canvas {
   height: 580px;
   position: absolute;
   background: transparent url(../img/message_big.png?) no-repeat top left;
-  
+  z-index: 0;
   -webkit-user-drag: none;
   -webkit-user-select: none;
   -ms-user-select: none;
@@ -240,6 +240,7 @@ canvas {
   height: 660px;
   background: transparent url(../img/paper_pattern.png?) repeat top left;
   position: absolute;
+  z-index: 5;
 }
 
 #fake-background {
@@ -249,8 +250,19 @@ canvas {
   top: 40px;
   bottom: 40px;
   background: transparent url(../img/background.png) repeat top left;
+  z-index: 2;
 }
 
+
+#fake-content {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 40px;
+  bottom: 40px;
+  z-index: 3;
+  display: none;
+}
 
 #intro {
   position: absolute;
