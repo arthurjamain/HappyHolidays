@@ -33,7 +33,7 @@ var appBaseClass = function (opt) {
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
       $('#content, #fake-content').css({
-        backgroundImage: 'url(img/'+h.substr(1)+'_large.png?)'
+        backgroundImage: 'url(img/'+h.substr(1)+'_big.png?)'
       });
     } else {
       $('#content, #fake-content').css({
@@ -226,6 +226,23 @@ appBaseClass.showInstructionPicto = function() {
   }
 };
 
+appBaseClass.setContentScale = function() {
+  
+  var dw = $(window).width(),
+      dh = $(window).height(),
+      dr = dh / dw;
+
+  var squareAreaSide = 900;
+
+  if(dr < 1) {
+    this.scale = squareAreaSide/(squareAreaSide * (1/dr));
+  } else {
+    this.scale = 1;
+  }
+  $('body').css({
+    '-webkit-transform': 'scale('+this.scale+')'
+  });
+};
 
 appBaseClass.triggerCardOpening = function() {
 

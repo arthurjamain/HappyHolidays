@@ -31,6 +31,8 @@ var CanvasApp = appBaseClass.extend({
     $(window).on('resize', _.bind(this.onResize, this));
     window.app = this;
     this.initializeDom();
+    if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch)
+      this.setContentScale();
     this.setContentBounds();
     this.fillCanvasWithTiledTriangles();
 
@@ -54,6 +56,15 @@ var CanvasApp = appBaseClass.extend({
       $(this.views.cover).addClass('opened');
       $(this.views.inShad).addClass('opened');
       setTimeout(_.bind(function() {
+        // Changing opacity seems to be less time-consuming
+        // than changing diplay modes.
+        $(this.views.inShad).css({
+          opacity: 0
+        });
+        
+      }, this), 520),
+      setTimeout(_.bind(function() {
+        $(this.views.inShad).remove();
         $(this.views.coverShadow).addClass('opened');
       }, this), 650);
     } else {
@@ -171,8 +182,8 @@ var CanvasApp = appBaseClass.extend({
     var self = this;
     off = $('canvas').offset();
     var deletedPoint = {
-      x: Math.round((this.getX(e) - off.left)/self.triangleWidth)*self.triangleWidth,
-      y: Math.round((this.getY(e) - off.top)/self.triangleWidth)*self.triangleWidth
+      x: Math.round((this.getX(e) - off.left)/self.triangleWidth)*self.triangleWidth * (1/this.scale || 1),
+      y: Math.round((this.getY(e) - off.top)/self.triangleWidth)*self.triangleWidth * (1/this.scale || 1)
     };
 
     if(this.deletingToggler) {
@@ -187,7 +198,15 @@ var CanvasApp = appBaseClass.extend({
 
     //this.deletingToggler = (this.deletingToggler > 4) ? 0 : this.deletingToggler + 1 ;
     if(self.deletedTriangles >= (this.totalTriangles / 100 * this.fadeOutThreshold)) {
-      $('#contentcopy').fadeIn(1000);
+      $('#contentcopy').css({
+        'opacity': 0,
+        display: 'block'
+      });
+      $('#contentcopy').animate({
+        opacity: '1'
+      }, 1000);
+
+      $(document).off('mousemove touchmove');
     }
 
     // So yeah, as per usual with android there's at least one or two main
@@ -532,7 +551,14 @@ var CanvasApp = appBaseClass.extend({
 
     this.views.cover.style.left = (xPos) + 'px';
     this.views.cover.style.top = (yPos) + 'px';
-
+    
+    // Detect orientation change (cross ver/dev/whatever)
+    if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
+      if($(window).height() !== (this.prevWindowHeight || 0)) {
+        this.setContentScale();
+        this.prevWindowHeight = $(window).height();
+      }
+    }
   },
 
   getColor: function() {
