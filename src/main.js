@@ -32,11 +32,11 @@ var appBaseClass = function (opt) {
   var h = document.location.hash || '#message';
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
-      $('#content, #fake-content').css({
+      $('#content, #fake-content, #contentcopy').css({
         backgroundImage: 'url(img/'+h.substr(1)+'_big.png?)'
       });
     } else {
-      $('#content, #fake-content').css({
+      $('#content, #fake-content, #contentcopy').css({
         backgroundImage: 'url(img/'+h.substr(1)+'.png?)'
       });
     }

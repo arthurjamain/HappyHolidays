@@ -1,6 +1,7 @@
 var CanvasApp = appBaseClass.extend({
 
   views: {
+    container: document.getElementById('container'),
     content: document.getElementById('content'),
     contentcopy: document.getElementById('contentcopy'),
     instructions: document.getElementById('instructions'),
@@ -39,15 +40,17 @@ var CanvasApp = appBaseClass.extend({
 
 
     $('<img />').attr('src', 'img/cover.png').on('load', _.bind(function() {
+      $(self.views.container).animate({
+        opacity: 1
+      }, 1000);
+
       setTimeout(_.bind(function() {
-
-
         this.triggerCardOpening();
-
         setTimeout(_.bind(function() {
+        $('#container > .logo').fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
-      }, this), 1400);
+      }, this), 2500);
     }, this));
   },
 
@@ -122,8 +125,8 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasContainer.appendChild(this.views.canvasBackground);
     this.views.canvasContainer.appendChild(this.views.canvas);
 
-    $('.container').prepend(this.views.coverShadow);
-    $('.container').prepend(this.views.canvasContainer);
+    $(this.views.container).prepend(this.views.coverShadow);
+    $(this.views.container).prepend(this.views.canvasContainer);
   },
 
   setContentBounds: function() {
