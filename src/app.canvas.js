@@ -12,8 +12,6 @@ var CanvasApp = appBaseClass.extend({
   triangleWidth: 20,
   fadeOutThreshold: 15,
   initialize: function() {
-    // By default, the DOM is layed out to match the nocanvas
-    // version. Hence this reinit.
     var self = this;
     this.totalTriangles = 0;
     this.deletedTriangles = 0;
@@ -30,10 +28,14 @@ var CanvasApp = appBaseClass.extend({
       this.fadeOutThreshold = 55;
 
     $(window).on('resize', _.bind(this.onResize, this));
-    window.app = this;
+
+    // By default, the DOM is layed out to match the nocanvas
+    // version. Hence this reinit.
     this.initializeDom();
+    
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch)
       this.setContentScale();
+
     this.setContentBounds();
     this.fillCanvasWithTiledTriangles();
 
@@ -47,7 +49,7 @@ var CanvasApp = appBaseClass.extend({
       setTimeout(_.bind(function() {
         this.triggerCardOpening();
         setTimeout(_.bind(function() {
-        $('#container > .logo').fadeIn(1000);
+        $('body > .logo').fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);
@@ -60,7 +62,8 @@ var CanvasApp = appBaseClass.extend({
       $(this.views.inShad).addClass('opened');
       setTimeout(_.bind(function() {
         // Changing opacity seems to be less time-consuming
-        // than changing diplay modes.
+        // than changing diplay modes during an animation.
+        // The framerate drop is less noticable.
         $(this.views.inShad).css({
           opacity: 0
         });

@@ -114,23 +114,19 @@ canvas {
   -moz-backface-visibility: hidden;
   width: 136px;
   height: 28px;
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  display: none;
 }
 .logo.white {
   background-image:url(../img/logo_white.png);
 }
 
 #container #cover .logo {
-  position: absolute;
   bottom: 20px;
   right: 20px;
   display: block;
-}
-
-#container .logo {
-  position: absolute;
-  bottom: 40px;
-  right: 40px;
-  display: none;
 }
 
 #instructions {
