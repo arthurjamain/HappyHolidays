@@ -15,6 +15,8 @@ var CanvasApp = appBaseClass.extend({
     // By default, the DOM is layed out to match the nocanvas
     // version. Hence this reinit.
     var self = this;
+    window.app = this;
+
     this.totalTriangles = 0;
     this.deletedTriangles = 0;
 
@@ -30,7 +32,6 @@ var CanvasApp = appBaseClass.extend({
       this.fadeOutThreshold = 55;
 
     $(window).on('resize', _.bind(this.onResize, this));
-    window.app = this;
     this.initializeDom();
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch)
       this.setContentScale();
@@ -47,7 +48,7 @@ var CanvasApp = appBaseClass.extend({
       setTimeout(_.bind(function() {
         this.triggerCardOpening();
         setTimeout(_.bind(function() {
-        $('#container > .logo').fadeIn(1000);
+        $('> .logo', self.views.container).fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);
@@ -127,6 +128,13 @@ var CanvasApp = appBaseClass.extend({
 
     $(this.views.container).prepend(this.views.coverShadow);
     $(this.views.container).prepend(this.views.canvasContainer);
+
+    this.views.canvasContainer.appendChild(this.views.content);
+
+    if(document.all) {
+      $(this.views.cover).addClass('small');
+    }
+
   },
 
   setContentBounds: function() {
@@ -144,24 +152,24 @@ var CanvasApp = appBaseClass.extend({
 
     var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
 
-    this.views.content.style.left = (xPos + padding) + 'px';
-    this.views.content.style.top = (yPos + padding) + 'px';
+    //this.views.content.style.left = (xPos + padding) + 'px';
+    //this.views.content.style.top = (yPos + padding) + 'px';
     this.views.contentcopy.style.left = (xPos + padding) + 'px';
     this.views.contentcopy.style.top = (yPos + padding) + 'px';
 
     this.views.canvasContainer.style.left = (xPos) + 'px';
     this.views.canvasContainer.style.top = (yPos) + 'px';
 
-    this.views.coverShadow.style.bottom = $(document).height() - yPos;
-    this.views.coverShadow.style.left = xPos - (contentWidth - shadowWidth) / 2 * -1;
+    this.views.coverShadow.style.bottom = ($(document).height() - yPos) + 'px';
+    this.views.coverShadow.style.left = (xPos - (contentWidth - shadowWidth) / 2 * -1) + 'px';
 
-    this.views.canvas.style.left = padding;
-    this.views.canvas.style.top = padding;
+    this.views.canvas.style.left = padding + 'px';
+    this.views.canvas.style.top = padding + 'px';
 
-    this.views.canvasBackground.style.left = padding;
-    this.views.canvasBackground.style.top = padding;
-    this.views.canvasBackground.style.width = contentWidth - padding * 2;
-    this.views.canvasBackground.style.height = contentWidth - padding * 2;
+    this.views.canvasBackground.style.left = padding + 'px';
+    this.views.canvasBackground.style.top = padding + 'px';
+    this.views.canvasBackground.style.width = (contentWidth - padding * 2) + 'px';
+    this.views.canvasBackground.style.height = (contentWidth - padding * 2) + 'px';
 
     this.views.inShad.style.left = (xPos - 5) + 'px';
     this.views.inShad.style.top = (yPos - 5) + 'px';
@@ -172,12 +180,12 @@ var CanvasApp = appBaseClass.extend({
     this.views.cover.style.top = (yPos) + 'px';
 
     if(this.views.canvas.width !== contentWidth)
-      this.views.canvas.width = contentWidth - padding * 2;
+      this.views.canvas.width = (contentWidth - padding * 2);
     if(this.views.canvas.height !== contentWidth)
-      this.views.canvas.height = contentHeight - padding * 2;
+      this.views.canvas.height = (contentHeight - padding * 2);
 
     this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
-    this.views.instructions.style.top = yPos + contentHeight - 150;
+    this.views.instructions.style.top = (yPos + contentHeight - 150) + 'px';
   },
 
   deleteTriangleUnderCursor: function(e) {
@@ -534,8 +542,8 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasBackground.style.left = padding;
     this.views.canvasBackground.style.top = padding;
 
-    this.views.content.style.left = (xPos + padding) + 'px';
-    this.views.content.style.top = (yPos + padding) + 'px';
+    //this.views.content.style.left = (xPos + padding) + 'px';
+    //this.views.content.style.top = (yPos + padding) + 'px';
 
     this.views.contentcopy.style.left = (xPos + padding) + 'px';
     this.views.contentcopy.style.top = (yPos + padding) + 'px';

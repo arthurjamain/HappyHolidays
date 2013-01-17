@@ -31,6 +31,7 @@ var NoCanvasApp = appBaseClass.extend({
     var self = this;
     this.device = opt.device || 'desktop';
     this.views = {
+      container: document.getElementById('container'),
       content: document.getElementById('content'),
       contentcopy: document.getElementById('contentcopy'),
       overlay: document.getElementById('overlay'),
@@ -58,8 +59,8 @@ var NoCanvasApp = appBaseClass.extend({
       xPos = xPos - xPos%this.triangleWidth;
       yPos = yPos - yPos%this.triangleWidth;
 
-      this.views.canvas.style.left = xPos + 'px';
-      this.views.canvas.style.top = yPos + 'px';
+      this.views.fakeCanvas.style.left = xPos + 'px';
+      this.views.fakeCanvas.style.top = yPos + 'px';
 
       this.views.content.style.left = xPos + 'px';
       this.views.content.style.top = yPos + 'px';
@@ -68,40 +69,48 @@ var NoCanvasApp = appBaseClass.extend({
       this.views.instructions.style.top = (yPos + 320) + 'px';
 
     }, this));
+
+
     setTimeout(_.bind(function() {
-      $(self.views.inShad).fadeOut(800);
-      $(self.views.cover).fadeOut(800, _.bind(function() {
-        this.triggerIntroAnimation(_.bind(function() {
-          this.setContentElements();
+      $(self.views.container).css({
+        display: 'block',
+        opacity: 1
+      });
+      setTimeout(_.bind(function() {
+        $(self.views.inShad).fadeOut(800);
+        $(self.views.cover).fadeOut(800, _.bind(function() {
+          this.triggerIntroAnimation(_.bind(function() {
+            this.setContentElements();
 
-          $(this.views.overlay).fadeIn(1000, function() {
-            $(document.getElementById('fake-content')).css({
-              display: 'block'
+            $(this.views.overlay).fadeIn(1000, function() {
+              $(document.getElementById('fake-content')).css({
+                display: 'block'
+              });
             });
-          });
-          
-          self.showInstructionPicto();
+            
+            self.showInstructionPicto();
 
-          $(this.views.intro).on('mouseover touchmove', function() {
-            $(this).remove();
-            if(self.instructionsLoop) {
-              clearInterval(self.instructionsLoop);
-              $(self.views.instructions).remove();
-            }
-
-            var threshold = (self.totalContentTriangles/100 * 10);
-            $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
-              hidden: 0,
-              toggle: 0,
-              threshold: threshold,
-              views: {
-                overlay: self.views.overlay
+            $(this.views.intro).on('mouseover touchmove', function() {
+              $(this).remove();
+              if(self.instructionsLoop) {
+                clearInterval(self.instructionsLoop);
+                $(self.views.instructions).remove();
               }
-            }));
-          });
-      }, this));
-    }, this));
-  }, this), 2000);
+
+              var threshold = (self.totalContentTriangles/100 * 10);
+              $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
+                hidden: 0,
+                toggle: 0,
+                threshold: threshold,
+                views: {
+                  overlay: self.views.overlay
+                }
+              }));
+            });
+          }, this));
+        }, this));
+      }, this), 2000);
+    }, this), 2000);
 },
 
   setContentElements: function() {
@@ -190,56 +199,74 @@ var NoCanvasApp = appBaseClass.extend({
       
 
       var baseIndex = 0;
+      var theel;
       if(e.fromElement) {
-        baseIndex = e.fromElement['data-index'];
+        theel = e.fromElement;
+        baseIndex = parseInt(e.fromElement['data-index'], 10);
       } else if(e.originalEvent.pageX && e.originalEvent.pageY) {
-        var t = document.elementFromPoint(e.originalEvent.pageX, e.originalEvent.pageY);
-        baseIndex = t['data-index'];
+        theel = document.elementFromPoint(e.originalEvent.pageX, e.originalEvent.pageY);
+        baseIndex = parseInt(theel['data-index'], 10);
       }
+      if(!theel) return;
 
       var indices = [];
       var elements = [];
+      var odd = (theel.className.indexOf('odd') > -1);
 
-      if(this.toggle === 0) {
+      if(odd) {
 
         this.toggle++;
-        indices = [baseIndex, baseIndex + 70, baseIndex + 2, baseIndex + 1];
-        
-        for(var i in indices) {
-          var el = $(this.views.overlay)[0].childNodes[indices[i]];
-          
-          $(el).css({
-            visibility: 'hidden'
-          });
-
+        if(this.toggle % 2 == 0) {
+          indices = [baseIndex, (baseIndex + 1)];
+          supplementaryTriangles = [(baseIndex + 2)];
+        }
+        else {
+          indices = [(baseIndex - 1), (baseIndex - 2)];
+          supplementaryTriangles = [(baseIndex - 1), (baseIndex - 3)];
         }
 
-      } else if(this.toggle == 3) {
-        this.toggle++;
-        indices = [baseIndex, baseIndex + 1, baseIndex - 1, baseIndex - 69];
-        supplementaryTriangles = [baseIndex - 2, baseIndex - 70];
-
+        
         for(var j in supplementaryTriangles) {
           var sup = $(this.views.overlay)[0].childNodes[supplementaryTriangles[j]];
           $(sup).css({
             borderBottomColor: 'transparent'
           });
         }
-        for(var k in indices) {
-          var el = $(this.views.overlay)[0].childNodes[indices[k]];
 
+        for(var i in indices) {
+          var el = $(this.views.overlay)[0].childNodes[indices[i]];
           $(el).css({
             visibility: 'hidden'
           });
 
         }
+
       } else {
-        if(this.toggle%5 === 0) {
-          this.toggle = 0;
-        } else {
-          this.toggle ++;
+        this.toggle++;
+        indices = [baseIndex, (baseIndex - 2)];
+        supplementaryTriangles = [(baseIndex - 1)];
+        
+        for(var j in supplementaryTriangles) {
+          var sup = $(this.views.overlay)[0].childNodes[supplementaryTriangles[j]];
+          $(sup).css({
+            borderTopColor: 'transparent'
+          });
+        }
+        
+        for(var k in indices) {
+          var el = $(this.views.overlay)[0].childNodes[indices[k]];
+          $(el).css({
+            visibility: 'hidden'
+          });
         }
       }
+
+      if(this.toggle%5 === 0) {
+        this.toggle = 0;
+      } else {
+        this.toggle ++;
+      }
+    
 
       if(this.hidden > this.threshold) {
         $(this.views.overlay).fadeOut('400', function() {

@@ -257,6 +257,7 @@ appBaseClass.setContentBounds = function() {
   var xPos = ($(document).width() - contentWidth) / 2,
       yPos = ($(window).height() - contentHeight) / 2;
   
+
   // Align left / top of the intro block on the previous
   // small "square" to ensure seamless overlapping of triangles
   xPos = xPos - xPos%this.triangleWidth;
@@ -264,12 +265,11 @@ appBaseClass.setContentBounds = function() {
 
   var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
 
+  this.views.intro.style.marginLeft = -introWidth/2 + 'px';
+  this.views.intro.style.marginTop = -introHeight/2 + 'px';
 
-  this.views.intro.style.marginLeft = -introWidth/2;
-  this.views.intro.style.marginTop = -introHeight/2;
-
-  this.views.fakeCanvas.style.left = xPos;
-  this.views.fakeCanvas.style.top = yPos;
+  this.views.fakeCanvas.style.left = xPos + 'px';
+  this.views.fakeCanvas.style.top = yPos + 'px';
 
   this.views.content.style.left = (xPos + padding) + 'px';
   this.views.content.style.top = (yPos + padding) + 'px';
@@ -288,6 +288,11 @@ appBaseClass.setContentBounds = function() {
 
   this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
   this.views.instructions.style.top = yPos + contentHeight - 150;
+
+  if(document.all) {
+    this.views.cover.className += ' small';
+  }
+
 };
 /**
 * HELPERS
