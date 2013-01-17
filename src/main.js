@@ -239,6 +239,12 @@ appBaseClass.setContentScale = function() {
   } else {
     this.scale = 1;
   }
+
+  $('body > .logo').css({
+    right: -((dw * 1/this.scale) - dw)/2 + 40,
+    bottom: -((dh * 1/this.scale) - dh)/2 + 40
+  });
+
   $('body').css({
     '-webkit-transform': 'scale('+this.scale+')'
   });
