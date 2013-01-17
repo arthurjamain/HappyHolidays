@@ -66,7 +66,7 @@ var NoCanvasApp = appBaseClass.extend({
       this.views.content.style.top = yPos + 'px';
 
       this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
-      this.views.instructions.style.top = (yPos + 320) + 'px';
+      this.views.instructions.style.top = (yPos + 450) + 'px';
 
     }, this));
 

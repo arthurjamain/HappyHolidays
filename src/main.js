@@ -2,7 +2,7 @@
 /*
 * Main entry point
 */
-if(isCanvasSupported()) {
+if(isCanvasSupported() && !document.all) {
   Sid.js('src/app.canvas.js', function() {
     $(function() {
       // Waiting for the background image to be fully loaded.
@@ -292,8 +292,8 @@ appBaseClass.setContentBounds = function() {
   this.views.cover.style.left = (xPos) + 'px';
   this.views.cover.style.top = (yPos) + 'px';
 
-  this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
-  this.views.instructions.style.top = yPos + contentHeight - 150;
+  this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
+  this.views.instructions.style.top = (yPos + 450) + 'px';
 
   if(document.all) {
     this.views.cover.className += ' small';

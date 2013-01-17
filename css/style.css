@@ -15,6 +15,10 @@ canvas {
   z-index: 40;
   opacity: 1;
   -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
   background: transparent;
 }
 
@@ -51,6 +55,7 @@ canvas {
   -ms-perspective: 5000;
   -o-perspective: 5000;
   perspective: 5000;
+  -ms-transform: perspective(5000);
 }
 
 .covershadow {
@@ -76,13 +81,28 @@ canvas {
   height: 660px;
   background-size: 100% 100%;
   z-index: 90;
+
   -webkit-transition: -webkit-transform 650ms ease-in;
+  -moz-transition: -webkit-transform 650ms ease-in;
+  -ms-transition: -webkit-transform 650ms ease-in;
+  -o-transition: -webkit-transform 650ms ease-in;
+  transition: -webkit-transform 650ms ease-in;
+
   -webkit-transform-origin: center top;
+  -moz-transform-origin: center top;
+  -ms-transform-origin: center top;
+  -o-transform-origin: center top;
+  transform-origin: center top;
+
   -webkit-backface-visibility: hidden;
 }
 
 #insideshadow.opened {
   -webkit-transform: rotate3d(1, 0, 0, 80deg) translateY(-40px);
+  -moz-transform: rotate3d(1, 0, 0, 80deg) translateY(-40px);
+  -ms-transform: rotate3d(1, 0, 0, 80deg) translateY(-40px);
+  -o-transform: rotate3d(1, 0, 0, 80deg) translateY(-40px);
+  transform: rotate3d(1, 0, 0, 80deg) translateY(-40px);
 }
 
 #cover {
@@ -102,7 +122,12 @@ canvas {
   transform-origin: center 0;
 
   background-size: 100% 100%;
+
   -webkit-transform: translateZ(150px) translateY(10px) scale(0.97);
+  -moz-transform: translateZ(150px) translateY(10px) scale(0.97);
+  -ms-transform: translateZ(150px) translateY(10px) scale(0.97);
+  -o-transform: translateZ(150px) translateY(10px) scale(0.97);
+  transform: translateZ(150px) translateY(10px) scale(0.97);
 }
 
 #cover.small {
@@ -111,6 +136,10 @@ canvas {
 
 #cover.opened {
   -webkit-transform: rotate3d(1, 0, 0, 110deg);
+  -moz-transform: rotate3d(1, 0, 0, 110deg);
+  -ms-transform: rotate3d(1, 0, 0, 110deg);
+  -o-transform: rotate3d(1, 0, 0, 110deg);
+  transform: rotate3d(1, 0, 0, 110deg);
 }
 
 .logo {
