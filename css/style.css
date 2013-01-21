@@ -10,6 +10,10 @@ html, body {
   width: 100%;
   overflow: visible;
   -webkit-transform-origin: center center;
+  -moz-transform-origin: center center;
+  -ms-transform-origin: center center;
+  -o-transform-origin: center center;
+  transform-origin: center center;
 }
 
 canvas {
@@ -34,6 +38,10 @@ canvas {
   box-shadow: 0 13px 12px -6px rgba(0, 0, 0, 0.7), 5px -5px 15px -5px rgba(0, 0, 0, 0.8), -5px -5px 15px -5px rgba(0, 0, 0, 0.8), inset 0 15px 40px -20px rgba(0, 0, 0, 0.8);
   
   -webkit-transform: rotate3d(0, 0, 0, 0);
+  -moz-transform: rotate3d(0, 0, 0, 0);
+  -ms-transform: rotate3d(0, 0, 0, 0);
+  -o-transform: rotate3d(0, 0, 0, 0);
+  transform: rotate3d(0, 0, 0, 0);
 
   background-size: 30% 30%;
   -webkit-background-size: 30% 30%;
