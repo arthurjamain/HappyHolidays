@@ -78,6 +78,8 @@ var NoCanvasApp = appBaseClass.extend({
       });
       setTimeout(_.bind(function() {
         $(self.views.inShad).fadeOut(800);
+
+        $('.logo').fadeIn(800);
         $(self.views.cover).fadeOut(800, _.bind(function() {
           this.triggerIntroAnimation(_.bind(function() {
             this.setContentElements();
