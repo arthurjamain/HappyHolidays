@@ -39,6 +39,7 @@ canvas {
   -webkit-background-size: 30% 30%;
   -moz-background-size: 30% 30%;
   -o-background-size: 30% 30%;
+  z-index: 5;
 }
 
 .canvasBackground {
@@ -80,7 +81,7 @@ canvas {
   height: 0;
   width: 740px;
   opacity: 0.7;
-  z-index: 50;
+  z-index: 0;
 
   -webkit-transform: translate3d(0, 0, 0, 0);
 

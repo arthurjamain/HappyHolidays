@@ -53,7 +53,7 @@ if(isCanvasSupported()) {
 * for the app
 **/
 var appBaseClass = function (opt) {
-  var h = document.location.hash || '#message';
+  var h = document.location.hash || '#joshfire';
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
       $('#content, #fake-content, #contentcopy').css({

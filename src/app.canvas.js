@@ -508,13 +508,12 @@ var CanvasApp = appBaseClass.extend({
 
     this.backgroundPattern = new Image();
 
-    var ol = function() {
+    var ol = function(e) {
       ctx.drawImage(this.backgroundPattern, 0, 0);
     };
 
-    this.backgroundPattern.onLoad = ol;
-    this.backgroundPattern.onload = ol;
-
+    this.backgroundPattern.onLoad = _.bind(ol, this);
+    this.backgroundPattern.onload = _.bind(ol, this);
     this.backgroundPattern.src = 'img/background.png';
 
     this.totalTriangles = w / (this.triangleWidth / 2) * h / this.triangleWidth;
@@ -565,14 +564,14 @@ var CanvasApp = appBaseClass.extend({
     var contentHeight = parseInt($(this.views.canvasContainer).height(), 10);
     var contentWidth = parseInt($(this.views.canvasContainer).width(), 10);
     var shadowWidth = parseInt($(this.views.coverShadow).width(), 10);
-    
+    var xPos, yPos;
     
     if(isMobile.apple.device) {
-      var xPos = ($(window).width() - contentWidth) / 2,
-          yPos = ($(window).height() - contentHeight) / 2;
+      xPos = ($(window).width() - contentWidth) / 2;
+      yPos = ($(window).height() - contentHeight) / 2;
     } else {
-      var xPos = ($(window).width() - contentWidth * this.scale) / 2,
-          yPos = ($(window).height() - contentHeight * this.scale) / 2;
+      xPos = ($(window).width() - contentWidth * this.scale) / 2;
+      yPos = ($(window).height() - contentHeight * this.scale) / 2;
     }
     
     // Align left / top of the intro block on the previous
@@ -580,8 +579,6 @@ var CanvasApp = appBaseClass.extend({
     // Incidentally reduces the laggy effect so i'll leave it anyway.
     xPos = xPos - xPos%this.triangleWidth;
     yPos = yPos - yPos%this.triangleWidth;
-
-    console.log(xPos, yPos);
 
     var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
 
@@ -592,14 +589,9 @@ var CanvasApp = appBaseClass.extend({
     if(force) {
       this.forceResizeOffset = this.forceResizeOffset * -1 || 1;
     }
+
     this.views.canvas.style.left = (padding + (this.forceResizeOffset || 0)) + 'px';
     this.views.canvas.style.top = (padding + (this.forceResizeOffset * -1 || 0)) + 'px';
-
-    this.views.canvasBackground.style.left = padding;
-    this.views.canvasBackground.style.top = padding;
-
-    //this.views.content.style.left = (xPos + padding) + 'px';
-    //this.views.content.style.top = (yPos + padding) + 'px';
 
     this.views.contentcopy.style.left = (xPos + padding) + 'px';
     this.views.contentcopy.style.top = (yPos + padding) + 'px';
@@ -607,11 +599,11 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasContainer.style.left = (xPos) + 'px';
     this.views.canvasContainer.style.top = (yPos) + 'px';
 
-    this.views.coverShadow.style.bottom = $(window).height() - yPos - 3;
-    this.views.coverShadow.style.left = xPos - (contentWidth - shadowWidth) / 2 * -1;
+    this.views.coverShadow.style.bottom = $(window).height() - yPos - 3 + 'px';
+    this.views.coverShadow.style.left = xPos - (contentWidth - shadowWidth) / 2 * -1 + 'px';
 
     this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';
-    this.views.instructions.style.top = yPos + contentHeight - 150;
+    this.views.instructions.style.top = yPos + contentHeight - 150 + 'px';
 
     this.views.inShad.style.left = (xPos - 5) + 'px';
     this.views.inShad.style.top = (yPos - 5) + 'px';
