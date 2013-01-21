@@ -10,7 +10,7 @@ var CanvasApp = appBaseClass.extend({
     canvas: null
   },
   triangleWidth: 20,
-  fadeOutThreshold: 15,
+  fadeOutThreshold: 55,
   initialize: function() {
     var self = this;
     window.app = this;
@@ -90,9 +90,11 @@ var CanvasApp = appBaseClass.extend({
         this.deletingToggler = 0;
 
         this.showInstructionPicto();
-
-        $(document).one('mousemove touchstart', 'canvas', function() {
-
+        
+        var ts = function(e) {
+          
+          var ctx = self.views.canvas.getContext('2d');
+          ctx.drawImage(self.backgroundPattern, 0, 0);
           if(self.instructionsLoop) {
             clearInterval(self.instructionsLoop);
             $(self.views.instructions).fadeOut(500);
@@ -100,9 +102,15 @@ var CanvasApp = appBaseClass.extend({
           
           self.paintOverAnimatedTriangles();
           $(self.views.content).show();
-        });
 
-        $(document).on('mousemove touchmove', 'canvas', _.bind(this.deleteTriangleUnderCursor, this));
+          $(document).on('mousemove touchmove', 'canvas', _.bind(self.deleteTriangleUnderCursor, self));
+      
+          e.preventDefault();
+          return false;
+        };
+
+        $(document).one('mousemove touchstart touchmove', 'canvas', ts);
+        
       }, this));
       window.theapp = this;
     });
@@ -146,9 +154,15 @@ var CanvasApp = appBaseClass.extend({
     var contentWidth = parseInt($(this.views.canvasContainer).width(), 10);
     var shadowWidth = parseInt($(this.views.coverShadow).width(), 10);
     
-    var xPos = ($(document).width() - contentWidth) / 2,
-        yPos = ($(window).height() - contentHeight) / 2;
-    
+    if(!this.scale) this.scale = 1;
+
+    if(isMobile.apple.device) {
+      var xPos = ($(window).width() - contentWidth) / 2,
+          yPos = ($(window).height() - contentHeight) / 2;
+    } else {
+      var xPos = ($(window).width() - contentWidth * this.scale) / 2,
+          yPos = ($(window).height() - contentHeight * this.scale) / 2;
+    }
     // Align left / top of the intro block on the previous
     // small "square" to ensure seamless overlapping of triangles
     xPos = xPos - xPos%this.triangleWidth;
@@ -223,13 +237,14 @@ var CanvasApp = appBaseClass.extend({
 
       $(document).off('mousemove touchmove');
     }
-
     // So yeah, as per usual with android there's at least one or two main
     // devices whose behaviour is broken. This fix forces a redraw of the
     // canvas element.
     if(isMobile.android.device) {
       this.onResize(null, true);
     }
+
+    return false;
   },
 
   getX: function(e) {
@@ -334,8 +349,14 @@ var CanvasApp = appBaseClass.extend({
 
   clearLargeTriangle: function(x, y, rev) {
     var ctx = this.views.canvas.getContext('2d');
-    ctx.beginPath();
+
+    if(document.all) {
+      ctx.clearRect(x, y, this.triangleWidth, this.triangleWidth);
+      return;
+    }
+
     if(rev) {
+      ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + this.triangleWidth*2, y);
       ctx.lineTo(x, y + this.triangleWidth*2);
@@ -344,6 +365,7 @@ var CanvasApp = appBaseClass.extend({
       ctx.clearRect(x, y, x + this.triangleWidth * 2, y + this.triangleWidth * 2);
       ctx.restore();
     } else {
+      ctx.beginPath();
       ctx.moveTo(x + 40, y);
       ctx.lineTo(x + this.triangleWidth*2, y + 40);
       ctx.lineTo(x, y + this.triangleWidth*2);
@@ -369,10 +391,14 @@ var CanvasApp = appBaseClass.extend({
         ctx.moveTo(x, y);
         ctx.lineTo(x + this.triangleWidth, y);
         ctx.lineTo(x, y + this.triangleWidth);
-        ctx.save();
-        ctx.clip();
-        ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
-        ctx.restore();
+        if(true) {
+          ctx.clearRect(x, y, this.triangleWidth, this.triangleWidth);
+        } else {
+          ctx.save();
+          ctx.clip();
+          ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
+          ctx.restore();
+        }
         ctx.fillStyle = "rgba(255, 255, 255, "+ (alpha) +")";
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -385,10 +411,14 @@ var CanvasApp = appBaseClass.extend({
         ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
         ctx.lineTo(x + this.triangleWidth, y + 1);
         ctx.lineTo(x + 1, y + this.triangleWidth);
+        if(true) {
+          ctx.clearRect(x, y, this.triangleWidth, this.triangleWidth);
+        } else {
         ctx.save();
         ctx.clip();
         ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
         ctx.restore();
+        }
         ctx.fillStyle = "rgba(255, 255, 255, "+ (alpha) +")";
         ctx.beginPath();
         ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
@@ -425,11 +455,14 @@ var CanvasApp = appBaseClass.extend({
         ctx.moveTo(x, y);
         ctx.lineTo(x + this.triangleWidth + 2 , y);
         ctx.lineTo(x, y + this.triangleWidth + 2);
-        ctx.save();
-        ctx.clip();
-        ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
-        ctx.restore();
-
+        if(true) {
+          ctx.clearRect(x, y, this.triangleWidth, this.triangleWidth);
+        } else {
+          ctx.save();
+          ctx.clip();
+          ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
+          ctx.restore();
+        }
         ctx.fillStyle = "rgba(255, 255, 255, "+ alpha +")";
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -443,10 +476,14 @@ var CanvasApp = appBaseClass.extend({
         ctx.moveTo(x + this.triangleWidth, y + this.triangleWidth);
         ctx.lineTo(x + this.triangleWidth, y);
         ctx.lineTo(x, y + this.triangleWidth);
-        ctx.save();
-        ctx.clip();
-        ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
-        ctx.restore();
+        if(true) {
+          ctx.clearRect(x, y, this.triangleWidth, this.triangleWidth);
+        } else {
+          ctx.save();
+          ctx.clip();
+          ctx.clearRect(x, y, x + this.triangleWidth, y + this.triangleWidth);
+          ctx.restore();
+        }
 
         ctx.fillStyle = "rgba(255, 255, 255, "+ alpha +")";
         ctx.beginPath();
@@ -468,11 +505,17 @@ var CanvasApp = appBaseClass.extend({
     var ac;
     var ctx = this.views.canvas.getContext('2d');
 
-    var tg = new Image();
-    tg.onload = function() {
-      ctx.drawImage(tg, 0, 0);
+
+    this.backgroundPattern = new Image();
+
+    var ol = function() {
+      ctx.drawImage(this.backgroundPattern, 0, 0);
     };
-    tg.src = 'img/background.png';
+
+    this.backgroundPattern.onLoad = ol;
+    this.backgroundPattern.onload = ol;
+
+    this.backgroundPattern.src = 'img/background.png';
 
     this.totalTriangles = w / (this.triangleWidth / 2) * h / this.triangleWidth;
 
@@ -523,8 +566,14 @@ var CanvasApp = appBaseClass.extend({
     var contentWidth = parseInt($(this.views.canvasContainer).width(), 10);
     var shadowWidth = parseInt($(this.views.coverShadow).width(), 10);
     
-    var xPos = ($(document).width() - contentWidth) / 2,
-        yPos = ($(window).height() - contentHeight) / 2;
+    
+    if(isMobile.apple.device) {
+      var xPos = ($(window).width() - contentWidth) / 2,
+          yPos = ($(window).height() - contentHeight) / 2;
+    } else {
+      var xPos = ($(window).width() - contentWidth * this.scale) / 2,
+          yPos = ($(window).height() - contentHeight * this.scale) / 2;
+    }
     
     // Align left / top of the intro block on the previous
     // small "square" to ensure seamless overlapping of triangles
@@ -532,16 +581,19 @@ var CanvasApp = appBaseClass.extend({
     xPos = xPos - xPos%this.triangleWidth;
     yPos = yPos - yPos%this.triangleWidth;
 
+    console.log(xPos, yPos);
+
     var padding = parseInt(contentWidth - $(this.views.content).width(), 10) / 2;
 
     /*
      * this param is used to forcefuly move the canvas around,
      * solving a rendering problem on android 4.
      */
-    if(force)
+    if(force) {
       this.forceResizeOffset = this.forceResizeOffset * -1 || 1;
-
-    this.views.canvas.style.left = padding + (this.forceResizeOffset || 0) + 'px';
+    }
+    this.views.canvas.style.left = (padding + (this.forceResizeOffset || 0)) + 'px';
+    this.views.canvas.style.top = (padding + (this.forceResizeOffset * -1 || 0)) + 'px';
 
     this.views.canvasBackground.style.left = padding;
     this.views.canvasBackground.style.top = padding;
@@ -555,7 +607,7 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasContainer.style.left = (xPos) + 'px';
     this.views.canvasContainer.style.top = (yPos) + 'px';
 
-    this.views.coverShadow.style.bottom = $(document).height() - yPos - 3;
+    this.views.coverShadow.style.bottom = $(window).height() - yPos - 3;
     this.views.coverShadow.style.left = xPos - (contentWidth - shadowWidth) / 2 * -1;
 
     this.views.instructions.style.left = (xPos + contentWidth/2 - $(this.views.instructions).width() / 2) + 'px';

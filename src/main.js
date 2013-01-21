@@ -1,8 +1,32 @@
+// isMobile()
+(function(a){a||(a=window.isMobile={});var c=/Android/i,b=navigator.userAgent;a.apple={};a.apple.phone=/iPhone/i.test(b);a.apple.ipod=/iPod/i.test(b);a.apple.tablet=/iPad/i.test(b);a.apple.device=a.apple.phone||a.apple.ipod||a.apple.tablet;a.android={};a.android.phone=/(?=.*\bAndroid\b)(?=.*\bMobile\b)/i.test(b);a.android.tablet=!a.android.phone&&c.test(b);a.android.device=a.android.phone||a.android.tablet;a.seven_inch=/(?:Nexus 7|BNTV250|Kindle Fire|Silk|GT-P1000)/i.test(b)})(window.isMobile);
 
+/**
+* Dummy touch listeners to prevent an Ice Cream Sandwich
+* bug ignoring such listeners if they are bound later on
+* (in a setTimeout for instance).
+**/
+if(isMobile.android.device || (document.all && document.addEventListener)) {
+  document.addEventListener('touchstart',
+    function(e) {
+      e.preventDefault();
+      return false;
+    }, false);
+  document.addEventListener('touchmove',
+    function(e) {
+      e.preventDefault();
+      return false;
+    }, false);
+  document.addEventListener('touchend',
+    function(e) {
+      e.preventDefault();
+      return false;
+    }, false);
+}
 /*
 * Main entry point
 */
-if(isCanvasSupported() && !document.all) {
+if(isCanvasSupported()) {
   Sid.js('src/app.canvas.js', function() {
     $(function() {
       // Waiting for the background image to be fully loaded.
@@ -234,10 +258,14 @@ appBaseClass.setContentScale = function() {
 
   var squareAreaSide = 900;
 
-  if(dr < 1) {
-    this.scale = squareAreaSide/(squareAreaSide * (1/dr));
-  } else {
-    this.scale = 1;
+  if(!this.scale) {
+    if(dr < 1) {
+      console.log(dr, 1/dr);
+      this.scale = (squareAreaSide/(squareAreaSide * (1/dr))).toFixed(2);
+      console.log(dr, 1/dr, this.scale);
+    } else {
+      this.scale = 1;
+    }
   }
 
   $('body > .logo').css({
@@ -246,7 +274,11 @@ appBaseClass.setContentScale = function() {
   });
 
   $('body').css({
-    '-webkit-transform': 'scale('+this.scale+')'
+    '-webkit-transform': 'scale('+this.scale+')',
+    '-moz-transform': 'scale('+this.scale+')',
+    '-ms-transform': 'scale('+this.scale+')',
+    '-o-transform': 'scale('+this.scale+')',
+    'transform': 'scale('+this.scale+')'
   });
 };
 
@@ -308,8 +340,6 @@ function isCanvasSupported(){
   var elem = document.createElement('canvas');
   return !!(elem.getContext && elem.getContext('2d'));
 }
-// isMobile()
-(function(a){a||(a=window.isMobile={});var c=/Android/i,b=navigator.userAgent;a.apple={};a.apple.phone=/iPhone/i.test(b);a.apple.ipod=/iPod/i.test(b);a.apple.tablet=/iPad/i.test(b);a.apple.device=a.apple.phone||a.apple.ipod||a.apple.tablet;a.android={};a.android.phone=/(?=.*\bAndroid\b)(?=.*\bMobile\b)/i.test(b);a.android.tablet=!a.android.phone&&c.test(b);a.android.device=a.android.phone||a.android.tablet;a.seven_inch=/(?:Nexus 7|BNTV250|Kindle Fire|Silk|GT-P1000)/i.test(b)})(window.isMobile);
 
 // easing func for jquery
 $.extend($.easing,

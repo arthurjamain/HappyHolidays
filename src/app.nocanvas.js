@@ -197,7 +197,6 @@ var NoCanvasApp = appBaseClass.extend({
     if((e.fromElement && e.fromElement.className.indexOf('overlay-triangle') > -1) ||
        (e.target && e.target.className && e.target.className.indexOf('overlay-triangle') > -1)) {
       
-
       var baseIndex = 0;
       var theel;
       if(e.fromElement) {
@@ -212,11 +211,11 @@ var NoCanvasApp = appBaseClass.extend({
       var indices = [];
       var elements = [];
       var odd = (theel.className.indexOf('odd') > -1);
-
+      console.log("DELETE A TRIANGLE PLZ");
       if(odd) {
 
         this.toggle++;
-        if(this.toggle % 2 == 0) {
+        if(this.toggle % 2 === 0) {
           indices = [baseIndex, (baseIndex + 1)];
           supplementaryTriangles = [(baseIndex + 2)];
         }
@@ -246,26 +245,22 @@ var NoCanvasApp = appBaseClass.extend({
         indices = [baseIndex, (baseIndex - 2)];
         supplementaryTriangles = [(baseIndex - 1)];
         
-        for(var j in supplementaryTriangles) {
-          var sup = $(this.views.overlay)[0].childNodes[supplementaryTriangles[j]];
-          $(sup).css({
+        for(var l in supplementaryTriangles) {
+          var sup2 = $(this.views.overlay)[0].childNodes[supplementaryTriangles[l]];
+          $(sup2).css({
             borderTopColor: 'transparent'
           });
         }
         
         for(var k in indices) {
-          var el = $(this.views.overlay)[0].childNodes[indices[k]];
-          $(el).css({
+          var el2 = $(this.views.overlay)[0].childNodes[indices[k]];
+          $(el2).css({
             visibility: 'hidden'
           });
         }
       }
 
-      if(this.toggle%5 === 0) {
-        this.toggle = 0;
-      } else {
-        this.toggle ++;
-      }
+      this.toggle ++;
     
 
       if(this.hidden > this.threshold) {
