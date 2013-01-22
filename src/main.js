@@ -27,7 +27,7 @@ if(isMobile.android.device || (document.all && document.addEventListener)) {
 * Main entry point
 */
 if(isCanvasSupported()) {
-  Sid.js('src/app.canvas.js', function() {
+  Sid.js('src/app.canvas.optimized.js', function() {
     $(function() {
       // Waiting for the background image to be fully loaded.
       $('<img />').attr('src', 'img/background.png').on('load', function() {
@@ -38,7 +38,7 @@ if(isCanvasSupported()) {
     });
   });
 } else {
-  Sid.js('src/app.nocanvas.js', function() {
+  Sid.js('src/app.nocanvas.optimized.js', function() {
     $(function() {
       // Waiting for the background image to be fully loaded.
       var app = new NoCanvasApp({
