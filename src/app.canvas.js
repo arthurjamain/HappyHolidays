@@ -181,7 +181,7 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasContainer.style.left = (xPos) + 'px';
     this.views.canvasContainer.style.top = (yPos) + 'px';
 
-    this.views.coverShadow.style.bottom = ($(document).height() - yPos) + 'px';
+    this.views.coverShadow.style.bottom = ($(document).height() - yPos - 20) + 'px';
     this.views.coverShadow.style.left = (xPos - (contentWidth - shadowWidth) / 2 * -1) + 'px';
 
     this.views.canvas.style.left = padding + 'px';
