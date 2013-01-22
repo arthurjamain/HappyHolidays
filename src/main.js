@@ -57,11 +57,11 @@ var appBaseClass = function (opt) {
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
       $('#content, #fake-content, #contentcopy').css({
-        backgroundImage: 'url(messages/'+h.substr(1)+'_big.png?)'
+        backgroundImage: 'url(messages/'+h.substr(1)+'_big.png)'
       });
     } else {
       $('#content, #fake-content, #contentcopy').css({
-        backgroundImage: 'url(messages/'+h.substr(1)+'.png?)'
+        backgroundImage: 'url(messages/'+h.substr(1)+'.png)'
       });
     }
   }
