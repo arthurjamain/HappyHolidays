@@ -347,14 +347,14 @@ appBaseClass.waitForImages = function(imgs, cb) {
     self.loadedImages = 0;
     _.each(imgs, function(el, i) {
       var ai = new Image();
-      ai.src = el;
       ai.onload = ai.onLoad = _.bind(function() {
         self.loadedImages++;
-        if(self.loadedImages == (imgs.length - 1) &&
+        if(self.loadedImages == (imgs.length) &&
           typeof cb === 'function') {
           cb.call(self);
         }
       }, self);
+      ai.src = el;
     });
   }
   return;
