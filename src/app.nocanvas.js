@@ -144,26 +144,7 @@ var NoCanvasApp = appBaseClass.extend({
     }
 
   },
-/*
-  setContentBounds: function() {
-    var contentHeight = $(this.views.content).height();
-    var contentWidth = $(this.views.content).width();
-    
-    var xPos = ($(document).width() - contentWidth) / 2,
-        yPos = ($(document).height() - contentHeight) / 2;
-    
-    // Align left / top of the intro block on the previous
-    // small "square" to ensure seamless overlapping of triangles
-    xPos = xPos - xPos%this.triangleWidth;
-    yPos = yPos - yPos%this.triangleWidth;
-    this.views.content.style.left = xPos + 'px';
-    this.views.content.style.top = yPos + 'px';
-    this.views.overlay.style.left = xPos + 'px';
-    this.views.overlay.style.top = yPos + 'px';
-    this.views.instructions.style.left = (($(document).width() - 50) / 2) + 'px';
-    this.views.instructions.style.top = yPos + 320;
-  },
-*/
+  
   setIntroElements: function() {
     var aTriangle,
         container = this.views.intro,

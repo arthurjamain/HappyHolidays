@@ -27,7 +27,7 @@ var CanvasApp = appBaseClass.extend({
     if(isMobile.apple.device)
       this.fadeOutThreshold = 25;
     if(!isMobile.apple.device && !isMobile.android.device)
-      this.fadeOutThreshold = 55;
+      this.fadeOutThreshold = 35;
 
     $(window).on('resize', _.bind(this.onResize, this));
 
@@ -55,7 +55,7 @@ var CanvasApp = appBaseClass.extend({
       setTimeout(_.bind(function() {
         this.triggerCardOpening();
         setTimeout(_.bind(function() {
-        $('.logo').fadeIn(1000);
+          $('.logo').fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);
@@ -181,7 +181,7 @@ var CanvasApp = appBaseClass.extend({
     this.views.canvasContainer.style.left = (xPos) + 'px';
     this.views.canvasContainer.style.top = (yPos) + 'px';
 
-    this.views.coverShadow.style.bottom = ($(document).height() - yPos) + 'px';
+    this.views.coverShadow.style.bottom = ($(document).height() - yPos - 20) + 'px';
     this.views.coverShadow.style.left = (xPos - (contentWidth - shadowWidth) / 2 * -1) + 'px';
 
     this.views.canvas.style.left = padding + 'px';

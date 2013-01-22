@@ -57,11 +57,11 @@ var appBaseClass = function (opt) {
   if(h && h.length && h.substr(1).length) {
     if(isMobile.android.device || isMobile.apple.device || isMobile.seven_inch) {
       $('#content, #fake-content, #contentcopy').css({
-        backgroundImage: 'url(messages/'+h.substr(1)+'_big.png?)'
+        backgroundImage: 'url(messages/'+h.substr(1)+'_big.png)'
       });
     } else {
       $('#content, #fake-content, #contentcopy').css({
-        backgroundImage: 'url(messages/'+h.substr(1)+'.png?)'
+        backgroundImage: 'url(messages/'+h.substr(1)+'.png)'
       });
     }
   }
@@ -344,15 +344,17 @@ appBaseClass.waitForImages = function(imgs, cb) {
   }
 
   if(imgs && imgs.length) {
+    self.loadedImages = 0;
     _.each(imgs, function(el, i) {
       var ai = new Image();
-      ai.src = el;
       ai.onload = ai.onLoad = _.bind(function() {
-        if(this.index == (imgs.length - 1) &&
+        self.loadedImages++;
+        if(self.loadedImages == (imgs.length) &&
           typeof cb === 'function') {
           cb.call(self);
         }
-      }, {index: i});
+      }, self);
+      ai.src = el;
     });
   }
   return;
