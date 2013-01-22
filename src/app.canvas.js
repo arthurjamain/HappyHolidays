@@ -27,7 +27,7 @@ var CanvasApp = appBaseClass.extend({
     if(isMobile.apple.device)
       this.fadeOutThreshold = 25;
     if(!isMobile.apple.device && !isMobile.android.device)
-      this.fadeOutThreshold = 55;
+      this.fadeOutThreshold = 35;
 
     $(window).on('resize', _.bind(this.onResize, this));
 
@@ -55,7 +55,7 @@ var CanvasApp = appBaseClass.extend({
       setTimeout(_.bind(function() {
         this.triggerCardOpening();
         setTimeout(_.bind(function() {
-        $('.logo').fadeIn(1000);
+          $('.logo').fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);
