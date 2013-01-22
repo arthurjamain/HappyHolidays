@@ -348,8 +348,10 @@ appBaseClass.waitForImages = function(imgs, cb) {
       var ai = new Image();
       ai.src = el;
       ai.onload = ai.onLoad = _.bind(function() {
+        console.log("to");
         if(this.index == (imgs.length - 1) &&
           typeof cb === 'function') {
+          console.log("ta");
           cb.call(self);
         }
       }, {index: i});
