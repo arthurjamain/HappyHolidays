@@ -44,6 +44,7 @@ var CanvasApp = appBaseClass.extend({
 
     this.waitForImages([
       'img/cover_large.png',
+      'img/inside_shadow.png',
       'img/paper_pattern.png',
       'img/background.png'
     ], function() {

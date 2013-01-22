@@ -72,7 +72,7 @@ var NoCanvasApp = appBaseClass.extend({
 
 
     this.waitForImages([
-      'img/cover_large.png',
+      'img/cover.png',
       'img/paper_pattern.png',
       'img/background.png'
     ], function() {
