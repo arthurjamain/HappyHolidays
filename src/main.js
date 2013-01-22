@@ -332,6 +332,31 @@ appBaseClass.setContentBounds = function() {
   }
 
 };
+
+
+
+appBaseClass.waitForImages = function(imgs, cb) {
+  var self = this;
+  // IE7 does not trigger load events so yeah...
+  if ($.browser.msie && parseInt($.browser.version, 10) === 7) {
+    if(typeof cb === 'function') cb.call(self);
+    return;
+  }
+
+  if(imgs && imgs.length) {
+    _.each(imgs, function(el, i) {
+      var ai = new Image();
+      ai.src = el;
+      ai.onload = ai.onLoad = _.bind(function() {
+        if(this.index == (imgs.length - 1) &&
+          typeof cb === 'function') {
+          cb.call(self);
+        }
+      }, {index: i});
+    });
+  }
+  return;
+};
 /**
 * HELPERS
 **/

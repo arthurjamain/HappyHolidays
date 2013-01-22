@@ -42,8 +42,11 @@ var CanvasApp = appBaseClass.extend({
     this.fillCanvasWithTiledTriangles();
 
 
-
-    $('<img />').attr('src', 'img/cover.png').on('load', _.bind(function() {
+    this.waitForImages([
+      'img/cover_large.png',
+      'img/paper_pattern.png',
+      'img/background.png'
+    ], function() {
       $(self.views.container).animate({
         opacity: 1
       }, 1000);
@@ -55,7 +58,7 @@ var CanvasApp = appBaseClass.extend({
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);
-    }, this));
+    });
   },
 
   triggerCardOpening: function() {
@@ -88,7 +91,6 @@ var CanvasApp = appBaseClass.extend({
     this.fillCanvasWithAnimatedTriangles(function() {
       this.fadeInSeparateLetters(_.bind(function() {
         this.deletingToggler = 0;
-
         this.showInstructionPicto();
         
         var ts = function(e) {

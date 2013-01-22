@@ -71,47 +71,53 @@ var NoCanvasApp = appBaseClass.extend({
     }, this));
 
 
-    setTimeout(_.bind(function() {
-      $(self.views.container).css({
-        display: 'block',
-        opacity: 1
-      });
+    this.waitForImages([
+      'img/cover_large.png',
+      'img/paper_pattern.png',
+      'img/background.png'
+    ], function() {
       setTimeout(_.bind(function() {
-        $(self.views.inShad).fadeOut(800);
-        $(self.views.cover).fadeOut(800, _.bind(function() {
-          this.triggerIntroAnimation(_.bind(function() {
-            this.setContentElements();
+        $(self.views.container).css({
+          display: 'block',
+          opacity: 1
+        });
+        setTimeout(_.bind(function() {
+          $(self.views.inShad).fadeOut(800);
+          $(self.views.cover).fadeOut(800, _.bind(function() {
+            this.triggerIntroAnimation(_.bind(function() {
+              this.setContentElements();
 
-            $(this.views.overlay).fadeIn(1000, function() {
-              $(document.getElementById('fake-content')).css({
-                display: 'block'
+              $(this.views.overlay).fadeIn(1000, function() {
+                $(document.getElementById('fake-content')).css({
+                  display: 'block'
+                });
               });
-            });
-            
-            self.showInstructionPicto();
+              
+              self.showInstructionPicto();
 
-            $(this.views.intro).on('mouseover touchmove', function() {
-              $(this).remove();
-              if(self.instructionsLoop) {
-                clearInterval(self.instructionsLoop);
-                $(self.views.instructions).remove();
-              }
-
-              var threshold = (self.totalContentTriangles/100 * 10);
-              $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
-                hidden: 0,
-                toggle: 0,
-                threshold: threshold,
-                views: {
-                  overlay: self.views.overlay
+              $(this.views.intro).on('mouseover touchmove', function() {
+                $(this).remove();
+                if(self.instructionsLoop) {
+                  clearInterval(self.instructionsLoop);
+                  $(self.views.instructions).remove();
                 }
-              }));
-            });
+
+                var threshold = (self.totalContentTriangles/100 * 10);
+                $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
+                  hidden: 0,
+                  toggle: 0,
+                  threshold: threshold,
+                  views: {
+                    overlay: self.views.overlay
+                  }
+                }));
+              });
+            }, this));
           }, this));
-        }, this));
+        }, this), 2000);
       }, this), 2000);
-    }, this), 2000);
-},
+    });
+  },
 
   setContentElements: function() {
 
