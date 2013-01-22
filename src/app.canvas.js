@@ -10,7 +10,7 @@ var CanvasApp = appBaseClass.extend({
     canvas: null
   },
   triangleWidth: 20,
-  fadeOutThreshold: 55,
+  fadeOutThreshold: 35,
   initialize: function() {
     var self = this;
     window.app = this;
@@ -55,7 +55,7 @@ var CanvasApp = appBaseClass.extend({
       setTimeout(_.bind(function() {
         this.triggerCardOpening();
         setTimeout(_.bind(function() {
-        $('> .logo', self.views.container).fadeIn(1000);
+        $('.logo').fadeIn(1000);
           this.triggerCanvasAnimation();
         }, this), 1200);
       }, this), 2500);

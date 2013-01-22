@@ -34,7 +34,7 @@ canvas {
   position: absolute;
   width: 660px;
   height: 660px;
-  background: transparent url(../img/paper_pattern.png?) repeat top left;
+  background: transparent url(../img/paper_pattern.png) repeat top left;
   box-shadow: 0 13px 12px -6px rgba(0, 0, 0, 0.7), 5px -5px 15px -5px rgba(0, 0, 0, 0.8), -5px -5px 15px -5px rgba(0, 0, 0, 0.8), inset 0 15px 40px -20px rgba(0, 0, 0, 0.8);
   
   -webkit-transform: rotate3d(0, 0, 0, 0);
@@ -141,7 +141,7 @@ canvas {
 
 #cover {
   position: absolute;
-  background: transparent url(../img/cover_large.png?) repeat top left;
+  background: transparent url(../img/cover_large.png) repeat top left;
   z-index: 100;
   -webkit-transition: -webkit-transform 1000ms ease-in-out; 
      -moz-transition: -moz-transform 1000ms ease-in-out; 
@@ -168,7 +168,7 @@ canvas {
 }
 
 #cover.small {
-  background: transparent url(../img/cover.png?) repeat top left!important;
+  background: transparent url(../img/cover.png) repeat top left!important;
 }
 
 #cover.opened {
@@ -268,7 +268,7 @@ canvas {
 
 #content.big,
 #contentcopy.big {
-  background-image: url(../img/message_big.png?);
+  background-image: url(../img/message_big.png);
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -319,7 +319,7 @@ canvas {
 #fake-canvas {
   width: 660px;
   height: 660px;
-  background: transparent url(../img/paper_pattern.png?) repeat top left;
+  background: transparent url(../img/paper_pattern.png) repeat top left;
   position: absolute;
   z-index: 5;
 }
