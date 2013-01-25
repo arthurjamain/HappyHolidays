@@ -266,6 +266,7 @@ canvas {
 
 #contentcopy {
   z-index: 60;
+  -webkit-transform: translateZ(100px);
 }
 
 #content.big,
