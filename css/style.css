@@ -218,6 +218,7 @@ canvas {
   -moz-background-size: 100% 100%;
   -o-background-size: 100% 100%;
 
+  -webkit-transform: translateZ(200px);
   display: none;
 
   -webkit-transition: -webkit-transform 1200ms ease-in-out; 
@@ -231,15 +232,15 @@ canvas {
   -o-transform: translateX(-200px);
   -ms-transform: translateX(-200px);
   -moz-transform: translateX(-200px);
-  -webkit-transform: translateX(-200px);
-  transform: translateX(-200px);
+  -webkit-transform: translateX(-200px) translateZ(200px);
+  transform: translateX(-200px) translateZ(200px);
 }
 #instructions.toRight {
   -o-transform: translateX(200px);
   -ms-transform: translateX(200px);
   -moz-transform: translateX(200px);
-  -webkit-transform: translateX(200px);
-  transform: translateX(200px);
+  -webkit-transform: translateX(200px) translateZ(200px);
+  transform: translateX(200px) translateZ(200px);
 }
 
 #content, #contentcopy {
