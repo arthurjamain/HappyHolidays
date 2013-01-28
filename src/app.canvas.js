@@ -107,7 +107,27 @@ var CanvasApp = appBaseClass.extend({
           $(self.views.content).show();
 
           $(document).on('mousemove touchmove', 'canvas', _.bind(self.deleteTriangleUnderCursor, self));
-      
+          // ANDROID FTW
+          // If the user has been desperately trying to
+          // move his fingers around for more than 5sec,
+          // trigger the end anim;
+          if(isMobile.android.device) {
+            self.safeEndTimeout = setTimeout(function() {
+
+              $('#contentcopy').css({
+                'opacity': 0,
+                display: 'block'
+              });
+
+              $('#contentcopy').animate({
+                opacity: '1'
+              }, 1000);
+
+              $(document).off('mousemove touchmove');
+
+            }, 5000);
+          }
+
           e.preventDefault();
           return false;
         };
@@ -237,6 +257,9 @@ var CanvasApp = appBaseClass.extend({
       $('#contentcopy').animate({
         opacity: '1'
       }, 1000);
+      
+      if(self.safeEndTimeout)
+        clearTimeout(self.safeEndTimeout);
 
       $(document).off('mousemove touchmove');
     }
