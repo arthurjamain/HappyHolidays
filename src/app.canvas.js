@@ -10,7 +10,7 @@ var CanvasApp = appBaseClass.extend({
     canvas: null
   },
   triangleWidth: 20,
-  fadeOutThreshold: 35,
+  fadeOutThreshold: 15,
   initialize: function() {
     var self = this;
     window.app = this;
