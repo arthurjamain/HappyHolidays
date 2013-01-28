@@ -103,6 +103,19 @@ var NoCanvasApp = appBaseClass.extend({
                   $(self.views.instructions).remove();
                 }
 
+                if(!isMobile.apple.device) {
+                  self.safeEndTimeout = setTimeout(function() {
+
+                    $(self.views.overlay).fadeOut('400', function() {
+                      $(self.views.overlay).remove();
+                      self.views.overlay = null;
+                    });
+
+                    $(document).off('mousemove touchmove');
+
+                  }, 5000);
+                }
+
                 var threshold = (self.totalContentTriangles/100 * 10);
                 $(document).on('mouseover touchmove', self.views.overlay, _.bind(self.deleteTrianglesUnderCursor, {
                   hidden: 0,
@@ -187,6 +200,7 @@ var NoCanvasApp = appBaseClass.extend({
       
       var baseIndex = 0;
       var theel;
+
       if(e.fromElement) {
         theel = e.fromElement;
         baseIndex = parseInt(e.fromElement['data-index'], 10);
@@ -199,7 +213,7 @@ var NoCanvasApp = appBaseClass.extend({
       var indices = [];
       var elements = [];
       var odd = (theel.className.indexOf('odd') > -1);
-      console.log("DELETE A TRIANGLE PLZ");
+      
       if(odd) {
 
         this.toggle++;

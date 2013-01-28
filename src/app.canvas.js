@@ -107,11 +107,8 @@ var CanvasApp = appBaseClass.extend({
           $(self.views.content).show();
 
           $(document).on('mousemove touchmove', 'canvas', _.bind(self.deleteTriangleUnderCursor, self));
-          // ANDROID FTW
-          // If the user has been desperately trying to
-          // move his fingers around for more than 5sec,
-          // trigger the end anim;
-          if(isMobile.android.device) {
+          
+          if(!isMobile.apple.device) {
             self.safeEndTimeout = setTimeout(function() {
 
               $('#contentcopy').css({
